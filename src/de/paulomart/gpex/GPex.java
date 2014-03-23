@@ -5,6 +5,7 @@ import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.paulomart.gpex.conf.GPexConfig;
+import de.paulomart.gpex.conf.GPexGroupConfig;
 import de.paulomart.gpex.permissible.PermissibleInjectManager;
 
 public class GPex extends JavaPlugin{
@@ -14,9 +15,11 @@ public class GPex extends JavaPlugin{
 	
 	@Getter
 	private PermissibleInjectManager permissionManager;
-	
 	@Getter
 	private GPexConfig gPexConfig;
+	@Getter
+	private GPexGroupConfig groupConfig;
+	
 	
 	@Override
 	public void onEnable(){
@@ -24,6 +27,9 @@ public class GPex extends JavaPlugin{
 		
 		gPexConfig = new GPexConfig();
 		gPexConfig.load();
+		
+		groupConfig = new GPexGroupConfig();
+		groupConfig.load();
 		
 		permissionManager = new PermissibleInjectManager();
 	}
