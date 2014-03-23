@@ -1,4 +1,4 @@
-package de.paulomart.gpex.permissions;
+package de.paulomart.gpex.permissible;
 
 import java.util.logging.Level;
 

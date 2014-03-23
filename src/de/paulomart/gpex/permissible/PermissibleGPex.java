@@ -1,22 +1,24 @@
-package de.paulomart.gpex.permissions;
+package de.paulomart.gpex.permissible;
 
 import lombok.Getter;
 import lombok.Setter;
 
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.ServerOperator;
 
 public class PermissibleGPex extends PermissibleBase{
 
 	@Setter
 	@Getter
 	private Permissible previousPermissible;
+	@Getter
+	private Player player;
 	
-	public PermissibleGPex(ServerOperator opable) {
-		super(opable);
-		// TODO Auto-generated constructor stub
+	public PermissibleGPex(Player player) {
+		super(player);
+		this.player = player;
 	}
 
 	@Override
