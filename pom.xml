@@ -5,4 +5,24 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>GPex 3.0</name>
   <description>GPex 3.0</description>
+  <repositories>
+       <!-- Bukkit can be found at the following repository -->
+     <repository>
+        <id>bukkit-repo</id>
+        <url>http://repo.bukkit.org/content/groups/public/</url>
+     </repository>
+  </repositories>
+  <dependencies>
+  	<dependency>
+        <groupId>org.bukkit</groupId>
+        <artifactId>bukkit</artifactId>
+         <!-- Bukkit API Version, change if necessary -->
+        <version>1.7.2-R0.2</version>
+    </dependency>
+  	<dependency>
+  		<groupId>org.projectlombok</groupId>
+  		<artifactId>lombok</artifactId>
+  		<version>1.12.6</version>
+  	</dependency>
+  </dependencies>
 </project>
