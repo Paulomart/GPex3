@@ -4,7 +4,6 @@ package de.paulomart.gpex.conf;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Logger;
 
 import lombok.Getter;
 
@@ -14,17 +13,20 @@ import de.paulomart.gpex.permissions.GPexPermission;
 
 @Getter
 public class GPexGroupConfig extends BaseConfig{
-
+	
+	private GPex gpex;
+	
+	private GPexGroup defaultGroup;
 	private HashMap<String, GPexGroup> groups = new HashMap<String, GPexGroup>();
+	
 	
 	public GPexGroupConfig() {
 		super(GPex.getInstance(), "gpex.yml", null, false, true);
+		gpex = GPex.getInstance();
 	}
 
 	@Override
-	public void onLoad() {
-		System.out.println("safd");
-		
+	public void onLoad() {	
 		for (String groupName : config.getConfigurationSection("groups").getKeys(false)){		
 			String path = "groups."+groupName;
 			List<GPexPermission> permissions = new ArrayList<GPexPermission>();
@@ -42,7 +44,7 @@ public class GPexGroupConfig extends BaseConfig{
 		// get(Num) -> num = keyset.array[Num] -> Group
 		// get(Num) = inherited Count
 		
-		// ## Get count of inherited Groups
+		// Get count of inherited Groups
 		List<Integer> sorter = new ArrayList<Integer>();
 		for(int i=0; i<groups.size(); ++i){
 			sorter.add(0);
@@ -59,7 +61,7 @@ public class GPexGroupConfig extends BaseConfig{
 			sorter.set(prio-1, i);
 		}
 		
-		// ## Give inherited Permissions to Groups
+		// Give inherited Permissions to Groups
 		for(int i=0; i<sorter.size(); ++i){
 			GPexGroup group = groups.get(groups.keySet().toArray()[sorter.get(i)]);
 			GPexGroup inherited = groups.get(group.getInherited());			
@@ -67,19 +69,18 @@ public class GPexGroupConfig extends BaseConfig{
 				group.getPermissions().addAll(inherited.getPermissions());
 			}
 		}	
-		
-		Logger log = GPex.getInstance().getLogger();
-		
-		// ## Print Groups
-		for(int i=0; i<groups.size(); ++i) {
-			String GName = groups.keySet().toArray()[i].toString();
-			log.info("----"+GName+"----");
-			log.info("Permissions: "+groups.get(GName).getPermissions().toString());
-			//log.info("Prio: "+groups.get(GName).getPriority());
-			log.info("Prefix: "+groups.get(GName).getChatPrefix());
-			log.info("Subfix: "+groups.get(GName).getChatSuffix());
+				
+		// Print Groups
+		for(String groupname : groups.keySet()) {
+			gpex.getLogger().info("----"+groupname+"----");
+			gpex.getLogger().info("Permissions: "+groups.get(groupname).getPermissions().toString());
 		}
-		log.info("Finished setting up Inherited Permissions");
+		
+		defaultGroup = groups.get(config.getString("defaultgroup"));
+		
+		if (defaultGroup == null){
+			//TODO ERROR HANDLING
+		}
 	}
 	
 		

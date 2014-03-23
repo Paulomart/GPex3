@@ -1,14 +1,13 @@
 package de.paulomart.gpex.permissions;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
 
 @Data
-public class GPexGroup {
+public class GPexGroup implements Cloneable{
 	
-	private List<GPexPermission> permissions = new ArrayList<GPexPermission>();	
+	private List<GPexPermission> permissions;	
 	private String chatPrefix;
 	private String chatSuffix;
 	private String tabPrefix;
@@ -26,5 +25,8 @@ public class GPexGroup {
 		this.tabSuffix = tabSuffix;
 	}
 	
+	public GPexGroup clone(){
+		return clone();
+	}
 
 }

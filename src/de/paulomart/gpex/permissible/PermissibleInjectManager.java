@@ -20,14 +20,9 @@ import static de.paulomart.gpex.utils.CraftBukkitInterface.getCBClassName;
 public class PermissibleInjectManager {
 	
 	private GPex gpex;
-	//private PermissionList permsList;
-	// Permissions subscriptions handling
-	//private GpexPermissionSubscriptionMap subscriptionHandler;
 	
 	public PermissibleInjectManager() {
 		gpex = GPex.getInstance();
-		//subscriptionHandler = GpexPermissionSubscriptionMap.inject(Bukkit.getServer().getPluginManager());
-		//permsList = PermissionList.inject(plugin.getServer().getPluginManager());
 		Bukkit.getServer().getPluginManager().registerEvents(new EventListener(), gpex);
 		injectAllPermissibles();
 	}
@@ -40,18 +35,12 @@ public class PermissibleInjectManager {
 	};
 
 	public void onDisable() {
-		//subscriptionHandler.uninject();
 		uninjectAllPermissibles();
 	}
 
 	public boolean hasDebugMode() {
 		return false;
 	}
-
-	/*
-	public PermissionList getPermissionList() {
-		return permsList;
-	}*/
 
 	public void injectPermissible(Player player) {
 		try {
@@ -73,7 +62,7 @@ public class PermissibleInjectManager {
 			if (!found) {
 				gpex.getLogger().warning("No Permissible injector found for your server implementation!");
 			} else if (!success) {
-				gpex.getLogger().warning("Unable to inject PEX's permissible for " + player.getName());
+				gpex.getLogger().warning("Unable to inject GPEX's permissible for " + player.getName());
 			}
 
 			permissible.recalculatePermissions();
