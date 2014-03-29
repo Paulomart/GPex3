@@ -1,5 +1,7 @@
 package de.paulomart.gpex;
 
+import java.util.logging.Logger;
+
 import lombok.Getter;
 
 import org.bukkit.entity.Player;
@@ -22,10 +24,19 @@ public class GPex extends JavaPlugin{
 	@Getter
 	private GPexGroupConfig groupConfig;
 	
+	private Logger log;
 	
 	@Override
 	public void onEnable(){
 		instance = this;
+		log = getLogger();
+		
+		log.warning("################  W A R N I N G  ###################");
+		log.warning("YOU ARE USING A UNSTABLE BUILD OF GPEX.");
+		log.warning("IT MAY BREAK YOUR SERVER AND ALL THE THINGS");
+		log.warning("PLESE CONSIDER DOWNLOADING A STABLE BUILD.");
+		log.warning(">>>> http://dl.paul-h.de/!GPex <<<<");
+		log.warning("####################################################");
 		
 		gPexConfig = new GPexConfig();
 		gPexConfig.load();

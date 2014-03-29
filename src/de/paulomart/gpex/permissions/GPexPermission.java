@@ -14,11 +14,11 @@ public class GPexPermission {
 			rawPermission = rawPermission.replaceFirst("-", "");
 			isPositive = false;
 		}
-		permissionNode = rawPermission;
+		permissionNode = rawPermission.toLowerCase();
 	}
 	
 	public GPexPermission(String permissionNode, boolean isPositive) {
-		this.permissionNode = permissionNode;
+		this.permissionNode = permissionNode.toLowerCase();
 		this.isPositive = isPositive;
 	}
 	
