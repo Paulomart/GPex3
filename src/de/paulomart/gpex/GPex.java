@@ -9,8 +9,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import de.paulomart.gpex.conf.GPexConfig;
 import de.paulomart.gpex.conf.GPexGroupConfig;
+import de.paulomart.gpex.mysql.GPexMysql;
 import de.paulomart.gpex.permissible.PermissibleInjectManager;
 import de.paulomart.gpex.permissions.GPexPlayerGroup;
+import de.paulomart.gpex.utils.mysql.MysqlDatabaseConnector;
 
 public class GPex extends JavaPlugin{
 
@@ -20,9 +22,12 @@ public class GPex extends JavaPlugin{
 	@Getter
 	private PermissibleInjectManager permissionManager;
 	@Getter
-	private GPexConfig gPexConfig;
+	private GPexConfig gpexConfig;
 	@Getter
 	private GPexGroupConfig groupConfig;
+	@Getter
+	private GPexMysql gpexMysql;
+	private MysqlDatabaseConnector mysqlConnector;
 	
 	private Logger log;
 	
@@ -38,18 +43,22 @@ public class GPex extends JavaPlugin{
 		log.warning(">>>> http://dl.paul-h.de/!GPex <<<<");
 		log.warning("####################################################");
 		
-		gPexConfig = new GPexConfig();
-		gPexConfig.load();
+		gpexConfig = new GPexConfig();
+		gpexConfig.load();
 		
 		groupConfig = new GPexGroupConfig();
 		groupConfig.load();
+		
+		mysqlConnector = new MysqlDatabaseConnector(this, gpexConfig.getMysqlHost(), gpexConfig.getMysqlPort(), gpexConfig.getMysqlUser(), gpexConfig.getMysqlPassword(), gpexConfig.getMysqlDatabase());
+		
+		gpexMysql = new GPexMysql(mysqlConnector, gpexConfig.getMysqlTable());
 		
 		permissionManager = new PermissibleInjectManager();
 	}
 	
 	@Override
 	public void onDisable(){
-		gPexConfig.save();
+		gpexConfig.save();
 		
 	}
 	

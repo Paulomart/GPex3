@@ -1,0 +1,7 @@
+mysql:
+  database: 'gpex'
+  host: 'localhost'
+  password: 'geheim123'
+  port: 3306
+  user: 'user'
+  table: 'gpex3'
