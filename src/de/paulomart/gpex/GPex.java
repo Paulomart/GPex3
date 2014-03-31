@@ -51,6 +51,12 @@ public class GPex extends JavaPlugin{
 		
 		mysqlConnector = new MysqlDatabaseConnector(this, gpexConfig.getMysqlHost(), gpexConfig.getMysqlPort(), gpexConfig.getMysqlUser(), gpexConfig.getMysqlPassword(), gpexConfig.getMysqlDatabase());
 		
+		if (mysqlConnector.connect()){
+			log.info("Connected to mysql.");
+		}else{
+			log.warning("Could not connect to mysql. exiting.");
+		}
+		
 		gpexMysql = new GPexMysql(mysqlConnector, gpexConfig.getMysqlTable());
 		
 		permissionManager = new PermissibleInjectManager();

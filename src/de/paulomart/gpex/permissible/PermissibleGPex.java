@@ -17,30 +17,28 @@ import de.paulomart.gpex.permissions.GPexPlayerGroup;
 public class PermissibleGPex extends PermissibleBase{
 
 	public static enum PermissionValue {TRUE, FALSE, NOTSET};
-	public static final String DOTREG = "";
+	public static final String DOTREG = "\\.";
 	
 	@Setter
 	@Getter
 	private Permissible previousPermissible;
-	
 	private HashMap<String, ChildablePermission> permissions = new HashMap<String, ChildablePermission>();
 	
 	@Getter
 	private Player player;
 	@Getter
-	private GPexPlayerGroup personalGroup;
+	private GPexPlayerGroup playerGroup;
 	private GPex gpex;
 	
 	public PermissibleGPex(Player player) {
 		super(player);
 		gpex = GPex.getInstance();
 		this.player = player;
-		personalGroup = gpex.getPlayerGroup(player);
 			
 		recalculatePermissions();
 	}	
 		
-	public void calcculateChilds(String permissionNode, HashMap<String, ChildablePermission> permissions, boolean positive){
+	public void calculateChilds(String permissionNode, HashMap<String, ChildablePermission> permissions, boolean positive){
 		String[] permission = permissionNode.split(DOTREG);
 		String keyperm = permission[0];
 		
@@ -51,7 +49,7 @@ public class PermissibleGPex extends PermissibleBase{
 		}
 							
 		if (permission.length != 1){
-			calcculateChilds(permissionNode.replaceFirst(keyperm+DOTREG, ""), childablePermission.getChildPermissions(), positive);
+			calculateChilds(permissionNode.replaceFirst(keyperm+DOTREG, ""), childablePermission.getChildPermissions(), positive);
 		}else{
 			childablePermission.setValue(positive ? PermissionValue.TRUE : PermissionValue.FALSE);
 		}
@@ -59,8 +57,14 @@ public class PermissibleGPex extends PermissibleBase{
 	
 	@Override
 	public void recalculatePermissions(){
-		for (GPexPermission gpexPermission : personalGroup.getPermissions()){
-			calcculateChilds(gpexPermission.getPermissionNode(), permissions, gpexPermission.isPositive());
+		if (gpex == null){
+			return;
+		}
+		playerGroup = gpex.getPlayerGroup(player);
+		//TODO Prefix+Sufix Update?
+		
+		for (GPexPermission gpexPermission : playerGroup.getPermissions()){
+			calculateChilds(gpexPermission.getPermissionNode(), permissions, gpexPermission.isPositive());
 		}
 	}
 

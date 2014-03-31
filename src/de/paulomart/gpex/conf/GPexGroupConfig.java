@@ -19,7 +19,6 @@ public class GPexGroupConfig extends BaseConfig{
 	private GPexGroup defaultGroup;
 	private HashMap<String, GPexGroup> groups = new HashMap<String, GPexGroup>();
 	
-	
 	public GPexGroupConfig() {
 		super(GPex.getInstance(), "gpex.yml", null, false, true);
 		gpex = GPex.getInstance();
@@ -77,7 +76,6 @@ public class GPexGroupConfig extends BaseConfig{
 		}
 		
 		defaultGroup = groups.get(config.getString("defaultgroup"));
-		
 		if (defaultGroup == null){
 			//TODO ERROR HANDLING
 		}
