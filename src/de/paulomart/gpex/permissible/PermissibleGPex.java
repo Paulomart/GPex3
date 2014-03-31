@@ -37,12 +37,10 @@ public class PermissibleGPex extends PermissibleBase{
 		this.player = player;
 		personalGroup = gpex.getPlayerGroup(player);
 			
-		for (GPexPermission gpexPermission : personalGroup.getPermissions()){
-				calc(gpexPermission.getPermissionNode(), permissions, gpexPermission.isPositive());
-		}
+		recalculatePermissions();
 	}	
 		
-	public void calc(String permissionNode, HashMap<String, ChildablePermission> permissions, boolean positive){
+	public void calcculateChilds(String permissionNode, HashMap<String, ChildablePermission> permissions, boolean positive){
 		String[] permission = permissionNode.split(DOTREG);
 		String keyperm = permission[0];
 		
@@ -53,7 +51,7 @@ public class PermissibleGPex extends PermissibleBase{
 		}
 							
 		if (permission.length != 1){
-			calc(permissionNode.replaceFirst(keyperm+DOTREG, ""), childablePermission.getChildPermissions(), positive);
+			calcculateChilds(permissionNode.replaceFirst(keyperm+DOTREG, ""), childablePermission.getChildPermissions(), positive);
 		}else{
 			childablePermission.setValue(positive ? PermissionValue.TRUE : PermissionValue.FALSE);
 		}
@@ -61,7 +59,9 @@ public class PermissibleGPex extends PermissibleBase{
 	
 	@Override
 	public void recalculatePermissions(){
-
+		for (GPexPermission gpexPermission : personalGroup.getPermissions()){
+			calcculateChilds(gpexPermission.getPermissionNode(), permissions, gpexPermission.isPositive());
+		}
 	}
 
 	private PermissionValue getValue(String permission, HashMap<String, ChildablePermission> permissions, String old){
