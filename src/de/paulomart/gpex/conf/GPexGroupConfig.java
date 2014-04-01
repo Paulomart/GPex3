@@ -35,8 +35,13 @@ public class GPexGroupConfig extends BaseConfig{
 			}
 						
 			String inherited = config.getString(path+".inherited");
+			String tabprefix = config.getString(path+".tabprefix");
+			String tabsuffix = config.getString(path+".tabsuffix");
+			String chatprefix = config.getString(path+".chatprefix");
+			String chatsuffix = config.getString(path+".chatsuffix");
 			
-			GPexGroup group = new GPexGroup(groupName, permissions, inherited, "chatpre", "chatsuf", "tabpre", "tabsuf");
+			
+			GPexGroup group = new GPexGroup(groupName, permissions, inherited, chatprefix, chatsuffix, tabprefix, tabsuffix);
 			groups.put(groupName, group);
 		}
 				
@@ -72,7 +77,7 @@ public class GPexGroupConfig extends BaseConfig{
 		// Print Groups
 		for(String groupname : groups.keySet()) {
 			gpex.getLogger().info("----"+groupname+"----");
-			gpex.getLogger().info("Permissions: "+groups.get(groupname).getPermissions().toString());
+			gpex.getLogger().info("Permissions: "+groups.get(groupname).toString());
 		}
 		
 		defaultGroup = groups.get(config.getString("defaultgroup"));

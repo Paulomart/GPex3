@@ -11,7 +11,7 @@ import de.paulomart.gpex.conf.GPexConfig;
 import de.paulomart.gpex.conf.GPexGroupConfig;
 import de.paulomart.gpex.mysql.GPexMysql;
 import de.paulomart.gpex.permissible.PermissibleInjectManager;
-import de.paulomart.gpex.permissions.GPexPlayerGroup;
+import de.paulomart.gpex.permissions.GPexPermissionData;
 import de.paulomart.gpex.utils.mysql.MysqlDatabaseConnector;
 
 public class GPex extends JavaPlugin{
@@ -68,9 +68,8 @@ public class GPex extends JavaPlugin{
 		
 	}
 	
-	public GPexPlayerGroup getPlayerGroup(Player player){
-		//TODO MYSQL STUFF.
-		return new GPexPlayerGroup(groupConfig.getDefaultGroup());
+	public GPexPermissionData getPlayerGroup(Player player){
+		return gpexMysql.sortPlayerPermissions(player);
 	}
 	
 }
