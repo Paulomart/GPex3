@@ -21,7 +21,7 @@ public class GPexPermission {
 		this.permissionNode = permissionNode.toLowerCase();
 		this.isPositive = isPositive;
 	}
-	
+		
 	@Override
 	public String toString(){
 		return (isPositive ? "" : "-")+permissionNode;

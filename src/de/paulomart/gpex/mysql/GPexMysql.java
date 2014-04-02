@@ -4,6 +4,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -13,6 +14,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.bukkit.entity.Player;
+import org.json.simple.JSONValue;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
 
@@ -35,6 +37,7 @@ public class GPexMysql extends MysqlDatabaseChild{
 	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 	
 	private PreparedStatement selectPlayerDataStmt;
+	private PreparedStatement updatePlayerDataStmt;
 	
 	public GPexMysql(MysqlDatabaseConnector connector, String mysqlTable) {
 		super(connector);
@@ -61,6 +64,7 @@ public class GPexMysql extends MysqlDatabaseChild{
 
 	public void preparePrepardStatemantes() throws SQLException{
 		selectPlayerDataStmt = conn.prepareStatement("select (`data`) from `"+mysqlTable+"` where `name` like ? limit 1");
+		updatePlayerDataStmt = conn.prepareStatement("update `"+mysqlTable+"` set `data` = ? where `name` like ? limit 1");
 	}
 	
 	@Override
@@ -68,7 +72,23 @@ public class GPexMysql extends MysqlDatabaseChild{
 		
 	}
 	
-	public String getPlayerData(Player player){
+	public boolean setPlayerData(String player, String data){
+		try {
+			return unsafeSetPlayerData(player, data);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	private boolean unsafeSetPlayerData(String player, String data) throws SQLException{
+		System.out.println(data);
+		updatePlayerDataStmt.setString(1, data);
+		updatePlayerDataStmt.setString(2, player);
+		return (updatePlayerDataStmt.executeUpdate() == 1 ? true : false);
+	}
+	
+	public String getPlayerData(String player){
 		try {
 			return unsafeGetPlayerData(player);
 		} catch (SQLException e) {
@@ -77,14 +97,55 @@ public class GPexMysql extends MysqlDatabaseChild{
 		return "{}";
 	}
 	
-	private String unsafeGetPlayerData(Player player) throws SQLException{
-		selectPlayerDataStmt.setString(1, player.getName());
+	private String unsafeGetPlayerData(String player) throws SQLException{
+		selectPlayerDataStmt.setString(1, player);
 
 		ResultSet result = selectPlayerDataStmt.executeQuery();
 		if (!result.next()){
 			return "{}";
 		}
 		return result.getString("data");
+	}
+	
+	public String constructJSON(SortedMap<Long, GPexPermissionData> permissionData, GPexPermissionData basePermissionData){
+		Map<Object, Object> json = new LinkedHashMap<Object, Object>();
+		
+		if (basePermissionData != null){
+			json.put("base", jsonMapFrom(basePermissionData));
+		}
+		
+		if  (permissionData != null && !permissionData.isEmpty()){
+			for (Long time : permissionData.keySet()){
+				json.put(stringFromDate(new Date(time)), jsonMapFrom(permissionData.get(time)));
+			}
+		}
+		return JSONValue.toJSONString(json);
+	}
+		
+	public void addToPermissionData(String player, Date date, GPexPermissionData newPermissionData){
+		SortResult result = getSortedActivePermissions(getPlayerData("Paulomart"), false);
+		SortedMap<Long, GPexPermissionData> permissionData = result.getSortedPermissionData();
+		if (!permissionData.containsKey(date.getTime())){
+			permissionData.put(date.getTime(), newPermissionData);
+		}else{
+			GPexPermissionData orginal = permissionData.get(date.getTime());
+			permissionData.put(date.getTime(), mergeNotNull(orginal, newPermissionData));
+		}
+		
+		setPlayerData(player, constructJSON(permissionData, result.getBasePlayerPermissions()));
+	}
+	
+	
+	public void setBasePermissionData(String player, GPexPermissionData newPermissionData){
+		SortResult result = getSortedActivePermissions(getPlayerData("Paulomart"), false);
+		GPexPermissionData basePermissionData = result.getBasePlayerPermissions();
+		
+		if (basePermissionData == null){
+			basePermissionData = new GPexPermissionData();
+		}
+		
+		basePermissionData = mergeNotNull(basePermissionData, newPermissionData);
+		setPlayerData(player, constructJSON(result.getSortedPermissionData(), basePermissionData));
 	}
 	
 	public String stringFromDate(Date date){
@@ -99,25 +160,32 @@ public class GPexMysql extends MysqlDatabaseChild{
 		}
 		return null;
 	}
-	
-	public SortResult getSortedActivePermissions(String input){
+		
+	public SortResult getSortedActivePermissions(String input, boolean exactCopy){
 		try {
 			JSONParser parser = new JSONParser();
 
 			Map<String, Object> json = (Map<String, Object>) parser.parse(input, containerFactory);
 			SortedMap<Long, GPexPermissionData> sortedPermissionData = new TreeMap<Long, GPexPermissionData>();	
-			GPexPermissionData basePlayerPermissions = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
+			GPexPermissionData basePlayerPermissions = null;
 			
 			for (String key : json.keySet()){
 				Map<Object, Object> value = (Map<Object, Object>) json.get(key);			
-				GPexPermissionData playerPermissions = constructPlayerPermissions(value);
+				GPexPermissionData playerPermissions = constructPlayerPermissions(value, exactCopy);
 				
 				if (key.equalsIgnoreCase("base")){
 					GPexGroup group = playerPermissions.getGroup();
 					if (group == null){
 						group = gpex.getGroupConfig().getDefaultGroup();
 					}
-					basePlayerPermissions = mergeNotNull(new GPexPermissionData(group), playerPermissions);
+					if (exactCopy){
+						basePlayerPermissions = mergeNotNull(new GPexPermissionData(group), playerPermissions);
+					}else{
+						basePlayerPermissions = new GPexPermissionData();
+						basePlayerPermissions.setGroup(group);
+						basePlayerPermissions = mergeNotNull(basePlayerPermissions, playerPermissions);
+					}
+
 					continue;
 				}
 				
@@ -131,17 +199,13 @@ public class GPexMysql extends MysqlDatabaseChild{
 					sortedPermissionData.put(date.getTime(), playerPermissions);
 				}
 			}
-			
-			if (basePlayerPermissions == null){
-				basePlayerPermissions = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
-			}
-			
+					
 			return new SortResult(sortedPermissionData, basePlayerPermissions);
 		} catch (Exception e){
 			e.printStackTrace();
 		}
 		
-		return new SortResult(new TreeMap<Long, GPexPermissionData>(), new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup()));
+		return new SortResult(new TreeMap<Long, GPexPermissionData>(), null);
 	}
 	
 	@Getter
@@ -155,11 +219,15 @@ public class GPexMysql extends MysqlDatabaseChild{
 		}
 	}
 	
-	public GPexPermissionData constructPlayerPermissions(Map<Object, Object> json){
+	public GPexPermissionData constructPlayerPermissions(Map<Object, Object> json, boolean exactCopy){
 		GPexPermissionData playerPermissions = new GPexPermissionData();
 				
 		if (gpex.getGroupConfig().getGroups().get((String) json.get("group")) != null){
-			playerPermissions = new GPexPermissionData(gpex.getGroupConfig().getGroups().get((String) json.get("group")));
+			if (exactCopy){
+				playerPermissions = new GPexPermissionData(gpex.getGroupConfig().getGroups().get((String) json.get("group")));
+			}else{
+				playerPermissions.setGroup(gpex.getGroupConfig().getGroups().get((String) json.get("group")));
+			}
 		}
 				
 		if (json.get("tabprefix") != null){
@@ -189,9 +257,13 @@ public class GPexMysql extends MysqlDatabaseChild{
 	}
 	
 	public GPexPermissionData sortPlayerPermissions(Player player){
-		SortResult sortResult = getSortedActivePermissions(getPlayerData(player));
+		SortResult sortResult = getSortedActivePermissions(getPlayerData(player.getName()), true);
 		SortedMap<Long, GPexPermissionData> sortedPermissionData = sortResult.getSortedPermissionData();
 		GPexPermissionData playerPermissions = sortResult.getBasePlayerPermissions();
+		
+		if (playerPermissions == null){
+			playerPermissions = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
+		}
 		
 		//Overrides new 
 		for (Long time : sortedPermissionData.keySet()){
@@ -200,6 +272,40 @@ public class GPexMysql extends MysqlDatabaseChild{
 		}		
 			
 		return playerPermissions;
+	}
+	
+	public Map<Object, Object> jsonMapFrom(GPexPermissionData permissionData){
+		Map<Object, Object> json = new LinkedHashMap<Object, Object>();
+		
+		if  (permissionData.getChatPrefix() != null){
+			json.put("chatprefix", permissionData.getChatPrefix());
+		}
+		
+		if  (permissionData.getChatSuffix() != null){
+			json.put("chatsuffix", permissionData.getChatSuffix());
+		}
+		
+		if  (permissionData.getTabPrefix() != null){
+			json.put("tabprefix", permissionData.getTabPrefix());
+		}
+		
+		if  (permissionData.getTabSuffix() != null){
+			json.put("tabsuffix", permissionData.getTabSuffix());
+		}
+		
+		if (permissionData.getGroup() != null){
+			json.put("group", permissionData.getGroup().getName());
+		}
+		
+		if (permissionData.getExtraPermissions() != null && !permissionData.getExtraPermissions().isEmpty()){
+			List<String> permissions = new ArrayList<String>();
+			for (GPexPermission gpexPermission : permissionData.getExtraPermissions()){
+				permissions.add(gpexPermission.toString());
+			}
+			json.put("permissions", permissions);
+		}
+		
+		return (json.isEmpty() ? null : json);
 	}
 	
 	public GPexPermissionData mergeNotNull(GPexPermissionData orginal, GPexPermissionData toBeAdded){

@@ -77,7 +77,7 @@ public class GPex extends JavaPlugin{
 		}
 		
 		gpexMysql = new GPexMysql(mysqlConnector, gpexConfig.getMysqlTable());
-		
+				
 		permissionManager = new PermissibleInjectManager();
 	}
 	
