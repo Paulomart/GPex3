@@ -61,7 +61,6 @@ public class GPexMysql extends MysqlDatabaseChild{
 
 	public void preparePrepardStatemantes() throws SQLException{
 		selectPlayerDataStmt = conn.prepareStatement("select (`data`) from `"+mysqlTable+"` where `name` like ? limit 1");
-												// 1 version - 2 ghostCount - 3 humanCount - 4 defusedCount,  5 fuseCount -  6 ghostByHumanKillCount,  7 humanByGhostKillCount, 8 gameDuratioin - 9 toString
 	}
 	
 	@Override
@@ -159,8 +158,10 @@ public class GPexMysql extends MysqlDatabaseChild{
 	public GPexPermissionData constructPlayerPermissions(Map<Object, Object> json){
 		GPexPermissionData playerPermissions = new GPexPermissionData();
 				
-		playerPermissions.setGroup(gpex.getGroupConfig().getGroups().get((String) json.get("group")));
-		
+		if (gpex.getGroupConfig().getGroups().get((String) json.get("group")) != null){
+			playerPermissions = new GPexPermissionData(gpex.getGroupConfig().getGroups().get((String) json.get("group")));
+		}
+				
 		if (json.get("tabprefix") != null){
 			playerPermissions.setTabPrefix((String) json.get("tabprefix"));
 		}
