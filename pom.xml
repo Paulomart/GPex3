@@ -24,5 +24,11 @@
   		<artifactId>lombok</artifactId>
   		<version>1.12.6</version>
   	</dependency>
+  	<dependency>
+  		<groupId>de.paulomart</groupId>
+  		<artifactId>ServerCore</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<optional>true</optional>
+  	</dependency>
   </dependencies>
 </project>

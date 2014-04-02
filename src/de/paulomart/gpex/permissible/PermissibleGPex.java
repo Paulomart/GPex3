@@ -47,6 +47,7 @@ public class PermissibleGPex extends PermissibleBase{
 	}	
 		
 	public void updateAndRecaclutatePermissions(){
+		//TODO :/
 		new Thread(	
 			new Runnable() {
 				@Override
@@ -56,6 +57,7 @@ public class PermissibleGPex extends PermissibleBase{
 						calculateChilds(gpexPermission.getPermissionNode(), permissions, gpexPermission.isPositive());
 					}
 					player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
+					gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
 				}
 			}
 		).start();

@@ -2,3 +2,4 @@ name: GPex
 version: 0.0.1-Alpha
 main: de.paulomart.gpex.GPex
 Authors: [Paulomart]
+softdepend: [NametagEdit, ServerCore]
