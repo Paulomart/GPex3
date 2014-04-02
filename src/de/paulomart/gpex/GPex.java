@@ -88,7 +88,7 @@ public class GPex extends JavaPlugin{
 	}
 	
 	public GPexPermissionData getPlayerGroup(Player player){
-		return gpexMysql.sortPlayerPermissions(player);
+		return gpexMysql.sortPlayerPermissions(player.getName());
 	}
 	
 }

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.bukkit.entity.Player;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ContainerFactory;
 import org.json.simple.parser.JSONParser;
@@ -82,7 +81,6 @@ public class GPexMysql extends MysqlDatabaseChild{
 	}
 	
 	private boolean unsafeSetPlayerData(String player, String data) throws SQLException{
-		System.out.println(data);
 		updatePlayerDataStmt.setString(1, data);
 		updatePlayerDataStmt.setString(2, player);
 		return (updatePlayerDataStmt.executeUpdate() == 1 ? true : false);
@@ -256,8 +254,8 @@ public class GPexMysql extends MysqlDatabaseChild{
 		return playerPermissions;
 	}
 	
-	public GPexPermissionData sortPlayerPermissions(Player player){
-		SortResult sortResult = getSortedActivePermissions(getPlayerData(player.getName()), true);
+	public GPexPermissionData sortPlayerPermissions(String player){
+		SortResult sortResult = getSortedActivePermissions(getPlayerData(player), true);
 		SortedMap<Long, GPexPermissionData> sortedPermissionData = sortResult.getSortedPermissionData();
 		GPexPermissionData playerPermissions = sortResult.getBasePlayerPermissions();
 		
