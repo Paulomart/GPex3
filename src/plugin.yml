@@ -3,3 +3,6 @@ version: 0.0.1-Alpha
 main: de.paulomart.gpex.GPex
 Authors: [Paulomart]
 softdepend: [NametagEdit, ServerCore]
+commands:
+   gpex:
+      description: Does gpex stuff

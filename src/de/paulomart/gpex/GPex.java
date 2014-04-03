@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.paulomart.gpex.commands.GPexCommand;
 import de.paulomart.gpex.conf.GPexConfig;
 import de.paulomart.gpex.conf.GPexGroupConfig;
 import de.paulomart.gpex.mysql.GPexMysql;
@@ -77,7 +78,9 @@ public class GPex extends JavaPlugin{
 		}
 		
 		gpexMysql = new GPexMysql(mysqlConnector, gpexConfig.getMysqlTable());
-				
+		
+		getCommand("gpex").setExecutor(new GPexCommand());
+		
 		permissionManager = new PermissibleInjectManager();
 	}
 	

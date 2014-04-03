@@ -3,7 +3,6 @@ package de.paulomart.gpex.mysql;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -23,6 +22,7 @@ import de.paulomart.gpex.GPex;
 import de.paulomart.gpex.permissions.GPexGroup;
 import de.paulomart.gpex.permissions.GPexPermission;
 import de.paulomart.gpex.permissions.GPexPermissionData;
+import de.paulomart.gpex.utils.DateUtils;
 import de.paulomart.gpex.utils.mysql.MysqlDatabaseChild;
 import de.paulomart.gpex.utils.mysql.MysqlDatabaseConnector;
 
@@ -31,10 +31,10 @@ public class GPexMysql extends MysqlDatabaseChild{
 
 	@Getter
 	private String mysqlTable;
+	@Getter
 	private ContainerFactory containerFactory;
 	private GPex gpex;
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-	
+
 	private PreparedStatement selectPlayerDataStmt;
 	private PreparedStatement updatePlayerDataStmt;
 	
@@ -63,48 +63,44 @@ public class GPexMysql extends MysqlDatabaseChild{
 
 	public void preparePrepardStatemantes() throws SQLException{
 		selectPlayerDataStmt = conn.prepareStatement("select (`data`) from `"+mysqlTable+"` where `name` like ? limit 1");
-		updatePlayerDataStmt = conn.prepareStatement("update `"+mysqlTable+"` set `data` = ? where `name` like ? limit 1");
+		updatePlayerDataStmt = conn.prepareStatement("insert into `"+mysqlTable+"` (`data`, `name`) values(?, ?) on duplicate key update data = values(data)");
 	}
 	
 	@Override
 	public void onDissconnect() {
-		
+		try {
+			selectPlayerDataStmt.close();
+			updatePlayerDataStmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean setPlayerData(String player, String data){
 		try {
-			return unsafeSetPlayerData(player, data);
+			updatePlayerDataStmt.setString(1, data);
+			updatePlayerDataStmt.setString(2, player);
+			return (updatePlayerDataStmt.executeUpdate() == 1 ? true : false);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
 	}
 	
-	private boolean unsafeSetPlayerData(String player, String data) throws SQLException{
-		updatePlayerDataStmt.setString(1, data);
-		updatePlayerDataStmt.setString(2, player);
-		return (updatePlayerDataStmt.executeUpdate() == 1 ? true : false);
-	}
-	
 	public String getPlayerData(String player){
 		try {
-			return unsafeGetPlayerData(player);
+			selectPlayerDataStmt.setString(1, player);
+
+			ResultSet result = selectPlayerDataStmt.executeQuery();
+			if (result.next()){
+				return result.getString("data");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return "{}";
 	}
-	
-	private String unsafeGetPlayerData(String player) throws SQLException{
-		selectPlayerDataStmt.setString(1, player);
-
-		ResultSet result = selectPlayerDataStmt.executeQuery();
-		if (!result.next()){
-			return "{}";
-		}
-		return result.getString("data");
-	}
-	
+		
 	public String constructJSON(SortedMap<Long, GPexPermissionData> permissionData, GPexPermissionData basePermissionData){
 		Map<Object, Object> json = new LinkedHashMap<Object, Object>();
 		
@@ -114,7 +110,7 @@ public class GPexMysql extends MysqlDatabaseChild{
 		
 		if  (permissionData != null && !permissionData.isEmpty()){
 			for (Long time : permissionData.keySet()){
-				json.put(stringFromDate(new Date(time)), jsonMapFrom(permissionData.get(time)));
+				json.put(DateUtils.stringFromDate(new Date(time)), jsonMapFrom(permissionData.get(time)));
 			}
 		}
 		return JSONValue.toJSONString(json);
@@ -133,7 +129,6 @@ public class GPexMysql extends MysqlDatabaseChild{
 		setPlayerData(player, constructJSON(permissionData, result.getBasePlayerPermissions()));
 	}
 	
-	
 	public void setBasePermissionData(String player, GPexPermissionData newPermissionData){
 		SortResult result = getSortedActivePermissions(getPlayerData("Paulomart"), false);
 		GPexPermissionData basePermissionData = result.getBasePlayerPermissions();
@@ -144,19 +139,6 @@ public class GPexMysql extends MysqlDatabaseChild{
 		
 		basePermissionData = mergeNotNull(basePermissionData, newPermissionData);
 		setPlayerData(player, constructJSON(result.getSortedPermissionData(), basePermissionData));
-	}
-	
-	public String stringFromDate(Date date){
-		return dateFormat.format(date);
-	}
-	
-	public Date dateFromString(String string){
-		try {
-			return dateFormat.parse(string);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 		
 	public SortResult getSortedActivePermissions(String input, boolean exactCopy){
@@ -187,7 +169,7 @@ public class GPexMysql extends MysqlDatabaseChild{
 					continue;
 				}
 				
-				Date date = dateFromString(key);
+				Date date = DateUtils.dateFromString(key);
 				
 				if (date == null){
 					gpex.getLogger().warning("Could not prase date from "+ key);

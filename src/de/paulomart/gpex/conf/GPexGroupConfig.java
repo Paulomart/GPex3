@@ -1,6 +1,5 @@
 package de.paulomart.gpex.conf;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,14 +32,13 @@ public class GPexGroupConfig extends BaseConfig{
 			for (String rawPermission : config.getStringList(path+".permissions")){
 				permissions.add(new GPexPermission(rawPermission));
 			}
-						
+
 			String inherited = config.getString(path+".inherited");
 			String tabprefix = config.getString(path+".tabprefix");
 			String tabsuffix = config.getString(path+".tabsuffix");
 			String chatprefix = config.getString(path+".chatprefix");
 			String chatsuffix = config.getString(path+".chatsuffix");
-			
-			
+
 			GPexGroup group = new GPexGroup(groupName, permissions, inherited, chatprefix, chatsuffix, tabprefix, tabsuffix);
 			groups.put(groupName, group);
 		}
@@ -85,13 +83,9 @@ public class GPexGroupConfig extends BaseConfig{
 			//TODO ERROR HANDLING
 		}
 	}
-	
 		
 	@Override
 	public void onSave() {
 		
-	}
-
-	
-	
+	}	
 }
