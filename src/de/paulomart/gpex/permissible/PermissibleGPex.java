@@ -42,24 +42,28 @@ public class PermissibleGPex extends PermissibleBase{
 
 		permissionData = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
 		for (GPexPermission gpexPermission : permissionData.getPermissions()){
-			calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
+			calculateChilds(gpexPermission.getPermissionNode(), permissionRoot, gpexPermission.isPositive());
 		}
 	}	
-			
-	public void calculateChilds(String permissionNode, HashMap<String, ChildablePermission> permissions, boolean positive){
+				
+	public void calculateChilds(String permissionNode, ChildablePermission permissions, boolean positive){
 		String[] permission = permissionNode.split(DOTREG);
 		String keyperm = permission[0];
 		
-		ChildablePermission childablePermission = permissions.get(keyperm);
-		if (childablePermission == null){
-			permissions.put(keyperm, new ChildablePermission());
-			childablePermission = permissions.get(keyperm);
-		}
-							
-		if (permission.length != 1){
-			calculateChilds(permissionNode.replaceFirst(keyperm+DOTREG, ""), childablePermission.getChildPermissions(), positive);
+		if (keyperm.equalsIgnoreCase("*")){
+			permissions.setValue(positive ? PermissionValue.TRUE : PermissionValue.FALSE);
 		}else{
-			childablePermission.setValue(positive ? PermissionValue.TRUE : PermissionValue.FALSE);
+			ChildablePermission nextChildPermission = permissions.getChildPermissions().get(keyperm);
+			if (nextChildPermission == null){
+				permissions.getChildPermissions().put(keyperm, new ChildablePermission());
+				nextChildPermission = permissions.getChildPermissions().get(keyperm);
+			}
+			
+			if (permission.length != 1){
+				calculateChilds(permissionNode.replaceFirst(keyperm+DOTREG, ""), nextChildPermission, positive);
+			}else{
+				nextChildPermission.setValue(positive ? PermissionValue.TRUE : PermissionValue.FALSE);
+			}
 		}
 	}
 	
@@ -75,7 +79,7 @@ public class PermissibleGPex extends PermissibleBase{
 				public void run() {
 					permissionData = gpex.getGpexDataStorage().getPermissionData(player.getName());
 					for (GPexPermission gpexPermission : permissionData.getPermissions()){
-						calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
+						calculateChilds(gpexPermission.getPermissionNode(), permissionRoot, gpexPermission.isPositive());
 					}
 					player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
 					gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
@@ -103,7 +107,6 @@ public class PermissibleGPex extends PermissibleBase{
 				
 				if (permission.length() == subPermission.length()){
 					str = subPermission;
-					
 				}else{
 					str = old.substring(old.indexOf(subPermission)+subPermission.length()+1, old.length());
 				}
@@ -116,10 +119,7 @@ public class PermissibleGPex extends PermissibleBase{
 	
 	@Override
 	public boolean hasPermission(String permission){
-		long start = System.currentTimeMillis();
-		boolean ret = getValue(permission) == PermissionValue.TRUE;
-		System.out.println("Permission Check took: "+ (System.currentTimeMillis() - start)+ " checked: "+permission);
-		return ret;
+		return getValue(permission) == PermissionValue.TRUE;
 	}
 	
 	@Override
@@ -155,7 +155,7 @@ public class PermissibleGPex extends PermissibleBase{
 		@Override
 		public String toString(){
 			if (hasChilds()){
-				return childPermissions.toString();
+				return "this="+value.toString()+", sub="+childPermissions.toString();
 			}else{
 				return value.toString();
 			}
