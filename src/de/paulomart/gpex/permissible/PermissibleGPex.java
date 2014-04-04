@@ -23,7 +23,8 @@ public class PermissibleGPex extends PermissibleBase{
 	@Setter
 	@Getter
 	private Permissible previousPermissible;
-	private HashMap<String, ChildablePermission> permissions = new HashMap<String, ChildablePermission>();
+	//private HashMap<String, ChildablePermission> permissions = new HashMap<String, ChildablePermission>();
+	private ChildablePermission permissions = new ChildablePermission();
 	
 	@Getter
 	private Player player;
@@ -40,9 +41,9 @@ public class PermissibleGPex extends PermissibleBase{
 
 		permissionData = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
 		for (GPexPermission gpexPermission : permissionData.getPermissions()){
-			calculateChilds(gpexPermission.getPermissionNode(), permissions, gpexPermission.isPositive());
+			calculateChilds(gpexPermission.getPermissionNode(), permissions.getChildPermissions(), gpexPermission.isPositive());
 		}
-		
+				
 		updateAndRecaclutatePermissions();
 	}	
 		
@@ -54,10 +55,11 @@ public class PermissibleGPex extends PermissibleBase{
 				public void run() {
 					permissionData = gpex.getPlayerGroup(player);
 					for (GPexPermission gpexPermission : permissionData.getPermissions()){
-						calculateChilds(gpexPermission.getPermissionNode(), permissions, gpexPermission.isPositive());
+						calculateChilds(gpexPermission.getPermissionNode(), permissions.getChildPermissions(), gpexPermission.isPositive());
 					}
 					player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
 					gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
+					System.out.println(permissions);
 				}
 			}
 		).start();
@@ -86,26 +88,41 @@ public class PermissibleGPex extends PermissibleBase{
 			return;
 		}
 		//TODO
+	}	
+	
+	public PermissionValue getValue(String permission){
+		return getValue(permission, permissions, permission, PermissionValue.NOTSET);
 	}
-
-	private PermissionValue getValue(String permission, HashMap<String, ChildablePermission> permissions, String old){
+	
+	private PermissionValue getValue(String permission, ChildablePermission childablePermission, String old, PermissionValue lastSetValue){
 		String subPermission = permission.split(DOTREG)[0];
-		ChildablePermission childablePermission = permissions.get(subPermission);
-		if (childablePermission == null){
-			return PermissionValue.NOTSET;
+		
+		if (childablePermission.getValue() != PermissionValue.NOTSET){
+			lastSetValue = childablePermission.getValue();
 		}
+
+		if (childablePermission.hasChilds()){
+			ChildablePermission subChildPermission = childablePermission.getChildPermissions().get(subPermission);
+			if (subChildPermission != null){
+				String str;
 				
-		if (childablePermission.hasChilds()){			
-			String str = old.substring(old.indexOf(subPermission)+subPermission.length()+1, old.length());
-			return getValue(str, childablePermission.getChildPermissions(), old);
+				if (permission.length() == subPermission.length()){
+					str = subPermission;
+					
+				}else{
+					str = old.substring(old.indexOf(subPermission)+subPermission.length()+1, old.length());
+				}
+				
+				return getValue(str, subChildPermission, old, lastSetValue);
+			}
 		}
-		return childablePermission.getValue();		
+		return lastSetValue;
 	}
 	
 	@Override
 	public boolean hasPermission(String permission){
 		long start = System.currentTimeMillis();
-		boolean ret = getValue(permission, permissions, permission) == PermissionValue.TRUE;
+		boolean ret = getValue(permission) == PermissionValue.TRUE;
 		System.out.println("Permission Check took: "+ (System.currentTimeMillis() - start)+ " checked: "+permission);
 		return ret;
 	}
