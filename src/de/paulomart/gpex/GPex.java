@@ -91,6 +91,7 @@ public class GPex extends JavaPlugin{
 	@Override
 	public void onDisable(){
 		permissionManager.onDisable();
+		mysqlConnector.dissconnect();
 		gpexConfig.save();
 		
 	}	

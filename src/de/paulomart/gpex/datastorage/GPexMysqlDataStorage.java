@@ -49,7 +49,7 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		}
 	}
 	
-	public boolean setJSONData(String player, String data){
+	public synchronized boolean setJSONData(String player, String data){
 		try {
 			updatePlayerDataStmt.setString(1, data);
 			updatePlayerDataStmt.setString(2, player);
@@ -60,18 +60,20 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		return false;
 	}
 	
-	public String getJSONData(String player){
+	public synchronized String getJSONData(String player){
+		String ret = "{}";
 		try {
 			selectPlayerDataStmt.setString(1, player);
 
 			ResultSet result = selectPlayerDataStmt.executeQuery();
 			if (result.next()){
-				return result.getString("data");
+				ret = result.getString("data");
 			}
+			result.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return "{}";
+		return ret;
 	}
 				
 	public boolean addToPermissionData(String player, Date date, GPexPermissionData newPermissionData, boolean merge){

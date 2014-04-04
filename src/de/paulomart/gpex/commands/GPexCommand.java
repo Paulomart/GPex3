@@ -26,8 +26,13 @@ public class GPexCommand implements CommandExecutor{
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		//TODO: Should make all the commands threads.
 		if (cmd.getName().equalsIgnoreCase("gpex")){
 			if ((args.length == 5 || args.length == 3) && args[0].equalsIgnoreCase("set")){
+				if (!sender.hasPermission("gpex.set")){
+					sender.sendMessage("§cYou don't have permissions for this command");
+				}
+				
 				String player = args[1];
 				try {
 					JSONParser parser = new JSONParser();
@@ -62,6 +67,10 @@ public class GPexCommand implements CommandExecutor{
 			}
 			
 			if (((args.length == 5 || args.length == 3) && args[0].equalsIgnoreCase("reset"))){
+				if (!sender.hasPermission("gpex.reset")){
+					sender.sendMessage("§cYou don't have permissions for this command");
+				}
+				
 				String player = args[1];
 				SortResult sortResult = gpex.getJsonConverter().getSortedActivePermissions(gpex.getGpexDataStorage().getJSONData(player), false);
 				
@@ -105,6 +114,10 @@ public class GPexCommand implements CommandExecutor{
 			}
 			
 			if (args.length == 2 && args[0].equalsIgnoreCase("help")){
+				if (!sender.hasPermission("gpex.help")){
+					sender.sendMessage("§cYou don't have permissions for this command");
+				}
+				
 				if (args[1].equalsIgnoreCase("commands")){
 					sender.sendMessage("§b/gpex set §a<player> <data> §2[timelimit]");
 					sender.sendMessage("§b/gpex reset §a<player> <dataType> §2[timelimit]");
@@ -123,14 +136,9 @@ public class GPexCommand implements CommandExecutor{
 					return true;
 				}
 			}
-			/*
 
-			sender.sendMessage("permissiondata - can be as followed: Every tile can be removed.");
-			sender.sendMessage("{\"group\":\"<group>\",\"tabprefix\":\"<string>\",\"tabsuffix\":\"<string>\",\"chatprefix\":\"<string>\",\"chatsuffix\":\"<string>\",\"permissions\":[\"permissionNode1\",\"permissionNode2\",...]}");
-			sender.sendMessage("timelimit - a string be as followed: dd-MM-yyyy HH:mm:ss");
-			*/
+			sender.sendMessage("§bGPex3 v"+gpex.getDescription().getVersion()+" by Paul Heidenreich / Paulomart, for more infos visit: http://dl.paul-h.de/!GPex3");
 			sender.sendMessage("§b/gpex §ahelp commands/parameters");
-			
 		}
 		
 		return false;
