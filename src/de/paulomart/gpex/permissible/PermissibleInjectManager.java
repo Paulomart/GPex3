@@ -38,10 +38,6 @@ public class PermissibleInjectManager {
 		uninjectAllPermissibles();
 	}
 
-	public boolean hasDebugMode() {
-		return false;
-	}
-
 	public void injectPermissible(Player player) {
 		try {
 			PermissibleGPex permissible = new PermissibleGPex(player);
@@ -65,11 +61,8 @@ public class PermissibleInjectManager {
 				gpex.getLogger().warning("Unable to inject GPEX's permissible for " + player.getName());
 			}
 
-			permissible.recalculatePermissions();
+//			permissible.recalculatePermissions();
 
-			if (success && hasDebugMode()) {
-				gpex.getLogger().info("Permissions handler for " + player.getName() + " successfully injected");
-			}
 		} catch (Throwable e) {
 			gpex.getLogger().log(Level.SEVERE, "Unable to inject permissible for " + player.getName(), e);
 		}
@@ -98,9 +91,7 @@ public class PermissibleInjectManager {
 
 			if (!success) {
 				gpex.getLogger().warning("No Permissible injector found for your server implementation (while uninjecting for " + player.getName() + "!");
-			} else if (hasDebugMode()) {
-				gpex.getLogger().info("Permissions handler for " + player.getName() + " successfully uninjected");
-			}
+			} 
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

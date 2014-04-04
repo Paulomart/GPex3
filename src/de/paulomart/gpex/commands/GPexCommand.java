@@ -3,9 +3,11 @@ package de.paulomart.gpex.commands;
 import java.util.Date;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
@@ -52,6 +54,12 @@ public class GPexCommand implements CommandExecutor{
 					}
 					
 					sender.sendMessage("Permissions set. #todo update player after setting permissions.");
+					
+					Player playerTarget = Bukkit.getServer().getPlayer(player);
+					
+					if (playerTarget != null){
+						playerTarget.recalculatePermissions();
+					}
 					
 					return true;
 				} catch (ParseException e) {

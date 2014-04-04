@@ -92,6 +92,7 @@ public class GPex extends JavaPlugin{
 	
 	@Override
 	public void onDisable(){
+		permissionManager.onDisable();
 		gpexConfig.save();
 		
 	}

@@ -19,17 +19,18 @@ public class PermissibleGPex extends PermissibleBase{
 
 	public static enum PermissionValue {TRUE, FALSE, NOTSET};
 	public static final String DOTREG = "\\.";
+	public static final int CASHETIME = 60000;
 	
 	@Setter
 	@Getter
 	private Permissible previousPermissible;
-	//private HashMap<String, ChildablePermission> permissions = new HashMap<String, ChildablePermission>();
 	private ChildablePermission permissionRoot = new ChildablePermission();
 	
 	@Getter
 	private Player player;
 	@Getter
 	private GPexPermissionData permissionData;
+	private long lastPermissionDataUpdate = 0;
 	private GPex gpex;
 	
 	//TODO: Make this shit faster.
@@ -43,27 +44,8 @@ public class PermissibleGPex extends PermissibleBase{
 		for (GPexPermission gpexPermission : permissionData.getPermissions()){
 			calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
 		}
-				
-		updateAndRecaclutatePermissions();
 	}	
-		
-	public void updateAndRecaclutatePermissions(){
-		//TODO :/
-		new Thread(	
-			new Runnable() {
-				@Override
-				public void run() {
-					permissionData = gpex.getPlayerGroup(player);
-					for (GPexPermission gpexPermission : permissionData.getPermissions()){
-						calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
-					}
-					player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
-					gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
-				}
-			}
-		).start();
-	}
-	
+			
 	public void calculateChilds(String permissionNode, HashMap<String, ChildablePermission> permissions, boolean positive){
 		String[] permission = permissionNode.split(DOTREG);
 		String keyperm = permission[0];
@@ -86,7 +68,23 @@ public class PermissibleGPex extends PermissibleBase{
 		if (gpex == null){
 			return;
 		}
-		//TODO
+		if (lastPermissionDataUpdate + CASHETIME <= System.currentTimeMillis()){
+			lastPermissionDataUpdate = System.currentTimeMillis();
+			new Thread(	
+					new Runnable() {
+						@Override
+						public void run() {
+							permissionData = gpex.getPlayerGroup(player);
+							for (GPexPermission gpexPermission : permissionData.getPermissions()){
+								calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
+							}
+							player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
+							gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
+							System.out.println(permissionRoot);
+						}
+					}
+			).start();
+		}
 	}	
 	
 	public PermissionValue getValue(String permission){
