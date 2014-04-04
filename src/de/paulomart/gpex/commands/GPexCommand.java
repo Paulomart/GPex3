@@ -36,8 +36,8 @@ public class GPexCommand implements CommandExecutor{
 				try {
 					JSONParser parser = new JSONParser();
 					@SuppressWarnings("unchecked")
-					Map<Object, Object> json = (Map<Object, Object>) parser.parse(args[2], gpex.getGpexMysql().getContainerFactory());
-					GPexPermissionData permissionData =	gpex.getGpexMysql().constructPlayerPermissions(json, false);
+					Map<Object, Object> json = (Map<Object, Object>) parser.parse(args[2], gpex.getJsonConverter().getContainerFactory());
+					GPexPermissionData permissionData =	gpex.getJsonConverter().constructPermissionData(json, false);
 					if (args.length == 5){
 						//timelimit
 						Date date = DateUtils.dateFromString(args[3]+ " " +args[4]);
@@ -45,10 +45,10 @@ public class GPexCommand implements CommandExecutor{
 							sender.sendMessage("can't prase date :/");
 							return false;
 						}
-						gpex.getGpexMysql().addToPermissionData(player, date, permissionData);
+						gpex.getGpexDataStorage().addToPermissionData(player, date, permissionData);
 					}else{
 						//edit base
-						gpex.getGpexMysql().setBasePermissionData(player, permissionData);
+						gpex.getGpexDataStorage().setBasePermissionData(player, permissionData);
 					}
 					
 					sender.sendMessage("Permissions set. #todo update player after setting permissions.");
