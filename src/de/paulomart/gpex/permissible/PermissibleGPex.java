@@ -24,7 +24,7 @@ public class PermissibleGPex extends PermissibleBase{
 	@Getter
 	private Permissible previousPermissible;
 	//private HashMap<String, ChildablePermission> permissions = new HashMap<String, ChildablePermission>();
-	private ChildablePermission permissions = new ChildablePermission();
+	private ChildablePermission permissionRoot = new ChildablePermission();
 	
 	@Getter
 	private Player player;
@@ -41,7 +41,7 @@ public class PermissibleGPex extends PermissibleBase{
 
 		permissionData = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
 		for (GPexPermission gpexPermission : permissionData.getPermissions()){
-			calculateChilds(gpexPermission.getPermissionNode(), permissions.getChildPermissions(), gpexPermission.isPositive());
+			calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
 		}
 				
 		updateAndRecaclutatePermissions();
@@ -55,11 +55,10 @@ public class PermissibleGPex extends PermissibleBase{
 				public void run() {
 					permissionData = gpex.getPlayerGroup(player);
 					for (GPexPermission gpexPermission : permissionData.getPermissions()){
-						calculateChilds(gpexPermission.getPermissionNode(), permissions.getChildPermissions(), gpexPermission.isPositive());
+						calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
 					}
 					player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
 					gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
-					System.out.println(permissions);
 				}
 			}
 		).start();
@@ -91,7 +90,7 @@ public class PermissibleGPex extends PermissibleBase{
 	}	
 	
 	public PermissionValue getValue(String permission){
-		return getValue(permission, permissions, permission, PermissionValue.NOTSET);
+		return getValue(permission, permissionRoot, permission, PermissionValue.NOTSET);
 	}
 	
 	private PermissionValue getValue(String permission, ChildablePermission childablePermission, String old, PermissionValue lastSetValue){
