@@ -70,18 +70,17 @@ public class PermissibleGPex extends PermissibleBase{
 		}
 		if (lastPermissionDataUpdate + CASHETIME <= System.currentTimeMillis()){
 			lastPermissionDataUpdate = System.currentTimeMillis();
-			new Thread(	
-					new Runnable() {
-						@Override
-						public void run() {
-							permissionData = gpex.getPlayerGroup(player);
-							for (GPexPermission gpexPermission : permissionData.getPermissions()){
-								calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
-							}
-							player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
-							gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
-						}
+			new Thread(new Runnable() {
+				@Override
+				public void run() {
+					permissionData = gpex.getGpexDataStorage().getPermissionData(player.getName());
+					for (GPexPermission gpexPermission : permissionData.getPermissions()){
+						calculateChilds(gpexPermission.getPermissionNode(), permissionRoot.getChildPermissions(), gpexPermission.isPositive());
 					}
+					player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
+					gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
+				}
+			}, "GPexPermissible, recalculatingPermissions for "+player.getName()
 			).start();
 		}
 	}	

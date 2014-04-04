@@ -15,6 +15,7 @@ public class GPexConfig extends BaseConfig{
 	private String mysqlPassword;
 	private String mysqlDatabase;
 	private String mysqlTable;
+	private boolean useNameTagHooks = true;
 	
 	public GPexConfig(){
 		super(GPex.getInstance(), "config.yml", "config.yml", true, true);
@@ -29,6 +30,7 @@ public class GPexConfig extends BaseConfig{
 		mysqlPort = config.getInt("mysql.port");
 		mysqlUser = config.getString("mysql.user");
 		mysqlTable = config.getString("mysql.table");
+		useNameTagHooks = config.getBoolean("useNameTagHooks");
 	}
 
 	@Override

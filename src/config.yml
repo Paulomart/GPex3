@@ -5,3 +5,4 @@ mysql:
   port: 3306
   user: user
   table: gpex3
+useNameTagHooks: true

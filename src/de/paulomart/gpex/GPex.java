@@ -5,7 +5,6 @@ import java.util.logging.Logger;
 import lombok.Getter;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.paulomart.gpex.commands.GPexCommand;
@@ -15,7 +14,6 @@ import de.paulomart.gpex.datastorage.GPexDataStorage;
 import de.paulomart.gpex.datastorage.GPexMysqlDataStorage;
 import de.paulomart.gpex.datastorage.JsonConverter;
 import de.paulomart.gpex.permissible.PermissibleInjectManager;
-import de.paulomart.gpex.permissions.GPexPermissionData;
 import de.paulomart.gpex.tag.GPexNameTagManager;
 import de.paulomart.gpex.tag.NameTagEditPluginImplemention;
 import de.paulomart.gpex.tag.NoNameTagChangeImplemention;
@@ -55,23 +53,23 @@ public class GPex extends JavaPlugin{
 		log.warning(">>>> http://dl.paul-h.de/!GPex <<<<");
 		log.warning("####################################################");
 		
-		//Check what plugins we have, that we can use to make cool stuff.
-		if (Bukkit.getServer().getPluginManager().isPluginEnabled("NametagEdit")){
-			log.info("Hooked into NametagEdit");
-			gpexNameTagManager = new NameTagEditPluginImplemention();
-		}else if (Bukkit.getServer().getPluginManager().isPluginEnabled("ServerCore")){
-			log.info("Hooked into ServerCore");
-			gpexNameTagManager = new ServerCoreImplemention();
-		}else{
-			log.info("No NameTag hook found");
-			gpexNameTagManager = new NoNameTagChangeImplemention();
-		}
-		
 		gpexConfig = new GPexConfig();
 		gpexConfig.load();
 		
 		groupConfig = new GPexGroupConfig();
 		groupConfig.load();
+		
+		//Check what plugins we have, that we can use to make cool stuff.
+		if (Bukkit.getServer().getPluginManager().isPluginEnabled("NametagEdit") && gpexConfig.isUseNameTagHooks()){
+			log.info("Hooked with NametagEdit");
+			gpexNameTagManager = new NameTagEditPluginImplemention();
+		}else if (Bukkit.getServer().getPluginManager().isPluginEnabled("ServerCore") && gpexConfig.isUseNameTagHooks()){
+			log.info("Hooked with ServerCore");
+			gpexNameTagManager = new ServerCoreImplemention();
+		}else{
+			log.info("No NameTag hook found");
+			gpexNameTagManager = new NoNameTagChangeImplemention();
+		}
 		
 		jsonConverter = new JsonConverter();
 		
@@ -95,10 +93,5 @@ public class GPex extends JavaPlugin{
 		permissionManager.onDisable();
 		gpexConfig.save();
 		
-	}
-	
-	public GPexPermissionData getPlayerGroup(Player player){
-		return gpexDataStorage.getPermissionData(player.getName());
-	}
-	
+	}	
 }
