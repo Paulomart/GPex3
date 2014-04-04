@@ -61,8 +61,6 @@ public class PermissibleInjectManager {
 				gpex.getLogger().warning("Unable to inject GPEX's permissible for " + player.getName());
 			}
 
-//			permissible.recalculatePermissions();
-
 		} catch (Throwable e) {
 			gpex.getLogger().log(Level.SEVERE, "Unable to inject permissible for " + player.getName(), e);
 		}

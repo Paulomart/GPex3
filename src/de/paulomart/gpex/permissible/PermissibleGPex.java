@@ -80,7 +80,6 @@ public class PermissibleGPex extends PermissibleBase{
 							}
 							player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
 							gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
-							System.out.println(permissionRoot);
 						}
 					}
 			).start();
