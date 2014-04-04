@@ -41,7 +41,7 @@ public class JsonConverter {
 		};
 	}
 		
-	public GPexPermissionData constructPermissionData(Map<Object, Object> json, boolean exactCopy){
+	public GPexPermissionData constructPermissionData(Map<String, Object> json, boolean exactCopy){
 		GPexPermissionData playerPermissions = new GPexPermissionData();
 				
 		if (gpex.getGroupConfig().getGroups().get((String) json.get("group")) != null){
@@ -82,15 +82,53 @@ public class JsonConverter {
 		Map<Object, Object> json = new LinkedHashMap<Object, Object>();
 		
 		if (basePermissionData != null){
-			json.put("base", constructJson(basePermissionData));
+			Map<String, Object> subjson = constructJson(basePermissionData);
+			if (!subjson.isEmpty())
+				json.put("base", subjson);
 		}
 		
 		if  (permissionData != null && !permissionData.isEmpty()){
 			for (Long time : permissionData.keySet()){
-				json.put(DateUtils.stringFromDate(new Date(time)), constructJson(permissionData.get(time)));
+				Map<String, Object> subjson = constructJson(permissionData.get(time));
+				if (!subjson.isEmpty())
+					json.put(DateUtils.stringFromDate(new Date(time)), subjson);
 			}
 		}
 		return JSONValue.toJSONString(json);
+	}
+	
+	public GPexPermissionData resetData(GPexPermissionData permissionData, String... toReset){
+		for (String reset : toReset){
+			if (reset.equalsIgnoreCase("chatprefix")){
+				permissionData.setChatPrefix(null);
+			}
+			
+			if (reset.equalsIgnoreCase("chatsuffix")){
+				permissionData.setChatSuffix(null);
+			}
+			
+			if (reset.equalsIgnoreCase("tabprefix")){
+				permissionData.setTabPrefix(null);
+			}
+			
+			if (reset.equalsIgnoreCase("tabsuffix")){
+				permissionData.setTabSuffix(null);
+			}
+			
+			if (reset.equalsIgnoreCase("permissions")){
+				permissionData.getExtraPermissions().clear();
+			}
+			
+			if (reset.equalsIgnoreCase("group")){
+				permissionData.setGroup(null);
+			}	
+		}
+		
+		if (permissionData.getGroup() != null && permissionData.getGroup().equals(gpex.getGroupConfig().getDefaultGroup())){
+			permissionData.setGroup(null);
+		}
+		
+		return permissionData;
 	}
 	
 	public Map<String, Object> constructJson(GPexPermissionData permissionData){
@@ -123,8 +161,8 @@ public class JsonConverter {
 			}
 			json.put("permissions", permissions);
 		}
-		
-		return (json.isEmpty() ? null : json);
+			
+		return json;
 	}
 	
 	public SortResult getSortedActivePermissions(String jsonInput, boolean exactCopy){
@@ -136,7 +174,7 @@ public class JsonConverter {
 			GPexPermissionData basePlayerPermissions = null;
 			
 			for (String key : json.keySet()){
-				Map<Object, Object> value = (Map<Object, Object>) json.get(key);			
+				Map<String, Object> value = (Map<String, Object>) json.get(key);			
 				GPexPermissionData playerPermissions = constructPermissionData(value, exactCopy);
 				
 				if (key.equalsIgnoreCase("base")){

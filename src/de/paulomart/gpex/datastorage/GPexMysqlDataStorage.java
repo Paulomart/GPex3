@@ -74,28 +74,35 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		return "{}";
 	}
 				
-	public boolean addToPermissionData(String player, Date date, GPexPermissionData newPermissionData){
+	public boolean addToPermissionData(String player, Date date, GPexPermissionData newPermissionData, boolean merge){
 		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData("Paulomart"), false);
 		SortedMap<Long, GPexPermissionData> permissionData = result.getSortedPermissionData();
 		if (!permissionData.containsKey(date.getTime())){
 			permissionData.put(date.getTime(), newPermissionData);
 		}else{
-			GPexPermissionData orginal = permissionData.get(date.getTime());
-			permissionData.put(date.getTime(), gpex.getJsonConverter().mergeNotNull(orginal, newPermissionData));
+			if (merge){
+				GPexPermissionData orginal = permissionData.get(date.getTime());
+				permissionData.put(date.getTime(), gpex.getJsonConverter().mergeNotNull(orginal, newPermissionData));
+			}else{
+				permissionData.put(date.getTime(), newPermissionData);
+			}			
 		}
-		
 		return setJSONData(player, gpex.getJsonConverter().constructJson(permissionData, result.getBasePlayerPermissions()));
 	}
 	
-	public boolean setBasePermissionData(String player, GPexPermissionData newPermissionData){
+	public boolean setBasePermissionData(String player, GPexPermissionData newPermissionData, boolean merge){
 		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData("Paulomart"), false);
-		GPexPermissionData basePermissionData = result.getBasePlayerPermissions();
-		
-		if (basePermissionData == null){
-			basePermissionData = new GPexPermissionData();
+		GPexPermissionData basePermissionData;
+		if (merge){
+			basePermissionData = result.getBasePlayerPermissions();
+			
+			if (basePermissionData == null){
+				basePermissionData = new GPexPermissionData();
+			}
+			basePermissionData = gpex.getJsonConverter().mergeNotNull(basePermissionData, newPermissionData);
+		}else{
+			basePermissionData = newPermissionData;
 		}
-		
-		basePermissionData = gpex.getJsonConverter().mergeNotNull(basePermissionData, newPermissionData);
 		return setJSONData(player, gpex.getJsonConverter().constructJson(result.getSortedPermissionData(), basePermissionData));
 	}
 
