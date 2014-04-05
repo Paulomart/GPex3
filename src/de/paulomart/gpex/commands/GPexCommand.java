@@ -1,5 +1,6 @@
 package de.paulomart.gpex.commands;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
 
@@ -35,8 +36,8 @@ public class GPexCommand implements CommandExecutor{
 				}
 				
 				String player = args[1];
-				String praseJson = "";
-				String praseDate = null;					
+				String parseJson = "";
+				String parseDate = null;					
 				int lastJson = args.length-1;
 				
 				if (!args[lastJson].endsWith("}")){
@@ -45,25 +46,41 @@ public class GPexCommand implements CommandExecutor{
 				}
 				
 				for (int i = 2; i < lastJson+1; i++){
-					praseJson += " "+args[i];
+					parseJson += " "+args[i];
 				}
 				
 				if (lastJson != args.length-1){
-					praseDate = args[lastJson+1]+" "+args[lastJson+2];
+					parseDate = args[lastJson+1]+" "+args[lastJson+2];
 				}
 				
 				try {
 					JSONParser parser = new JSONParser();				
 					@SuppressWarnings("unchecked")
-					Map<String, Object> json = (Map<String, Object>) parser.parse(praseJson, gpex.getJsonConverter().getContainerFactory());
+					Map<String, Object> json = (Map<String, Object>) parser.parse(parseJson, gpex.getJsonConverter().getContainerFactory());
 					GPexPermissionData permissionData =	gpex.getJsonConverter().constructPermissionData(json, false);
-					if (praseDate != null){
+					if (parseDate != null){
 						//timelimit
-						Date date = DateUtils.dateFromString(praseDate);
-						if (date == null){
-							sender.sendMessage("§cCan't prase date: \""+praseDate+"\"");
-							return false;
+						String[] parse = parseDate.split(" ");
+						Date date;
+						
+						if (parse[1].equalsIgnoreCase("days")){
+							int days;
+							try {
+								days = Integer.valueOf(parse[0]);
+							} catch (NumberFormatException e){
+								sender.sendMessage(e.toString());
+								sender.sendMessage("§cCan't prase day count: \""+parse[0]+"\"");
+								return false;
+							}
+							date = afterDays(days);
+						}else{
+							date = DateUtils.dateFromString(parseDate);
+							if (date == null){
+								sender.sendMessage("§cCan't prase date: \""+parseDate+"\"");
+								return false;
+							}
 						}
+						
 						gpex.getGpexDataStorage().addToPermissionData(player, date, permissionData, true);
 					}else{
 						//edit base
@@ -80,7 +97,7 @@ public class GPexCommand implements CommandExecutor{
 					return true;
 				} catch (ParseException e) {
 					sender.sendMessage(e.toString());
-					sender.sendMessage("§cCan't prase json: \""+praseJson+"\"");
+					sender.sendMessage("§cCan't prase json: \""+parseJson+"\"");
 					return true;
 				}
 			}
@@ -149,6 +166,7 @@ public class GPexCommand implements CommandExecutor{
 					sender.sendMessage("§3Of type string: group, tabprefix, tabsuffix, chatprefix, chatsuffix");
 					sender.sendMessage("§3Of type array: permissions");
 					sender.sendMessage("§aTimelimit: §ba timestamp in this format: dd-MM-yyyy HH:mm:ss");
+					sender.sendMessage("&3Can be also relative in days in this format: <days> days");
 					sender.sendMessage("§aDataType: §ba typename of the dataparameter, like group");
 					sender.sendMessage("§3Can be a list with , between typenames");
 					sender.sendMessage("§cDataType does not accept spaces!");
@@ -168,6 +186,12 @@ public class GPexCommand implements CommandExecutor{
 			return true;
 		}
 		return false;
+	}
+	
+	private Date afterDays(int days){
+		Calendar calendar = Calendar.getInstance(); 
+		calendar.add(Calendar.DATE, days);  // number of days to add 
+		return calendar.getTime();
 	}
 
 }
