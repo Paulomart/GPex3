@@ -3,6 +3,7 @@ package de.paulomart.gpex.conf;
 import lombok.Getter;
 
 import de.paulomart.gpex.GPex;
+import de.paulomart.gpex.utils.BukkitUtils;
 
 @Getter
 public class GPexConfig extends BaseConfig{
@@ -16,7 +17,8 @@ public class GPexConfig extends BaseConfig{
 	private String mysqlDatabase;
 	private String mysqlTable;
 	private boolean useNameTagHooks = true;
-
+	private String chatFormat;
+	
 	//GroupConfig. -> gpex.yml
 	private boolean webLoaded = false;
 	private String webURL = "";
@@ -36,6 +38,7 @@ public class GPexConfig extends BaseConfig{
 		mysqlUser = config.getString("mysql.user");
 		mysqlTable = config.getString("mysql.table");
 		useNameTagHooks = config.getBoolean("useNameTagHooks");
+		chatFormat = BukkitUtils.color(config.getString("chatFormat"));
 		webLoaded = config.getBoolean("groupsConfig.webLoaded");
 		webURL = config.getString("groupsConfig.webURL");
 		localPath = config.getString("groupsConfig.localPath");

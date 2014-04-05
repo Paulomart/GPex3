@@ -13,6 +13,7 @@ import de.paulomart.gpex.conf.GPexGroupConfig;
 import de.paulomart.gpex.datastorage.GPexDataStorage;
 import de.paulomart.gpex.datastorage.GPexMysqlDataStorage;
 import de.paulomart.gpex.datastorage.JsonConverter;
+import de.paulomart.gpex.listeners.PlayerListener;
 import de.paulomart.gpex.permissible.PermissibleInjectManager;
 import de.paulomart.gpex.tag.GPexNameTagManager;
 import de.paulomart.gpex.tag.NameTagEditPluginImplemention;
@@ -38,6 +39,8 @@ public class GPex extends JavaPlugin{
 	private GPexNameTagManager gpexNameTagManager;
 	@Getter
 	private JsonConverter jsonConverter;
+	@Getter
+	private PlayerListener playerListener;
 	
 	private Logger log;
 	
@@ -85,6 +88,7 @@ public class GPex extends JavaPlugin{
 		
 		getCommand("gpex").setExecutor(new GPexCommand());
 		
+		playerListener = new PlayerListener();
 		permissionManager = new PermissibleInjectManager();
 		
 		log.info("  _____ _____          ____  ");

@@ -6,6 +6,7 @@ mysql:
   user: user
   table: gpex3
 useNameTagHooks: true
+chatFormat: '%s: %s'
 groupsConfig:
   webLoaded: false
   webURL: 'http://gpex.domain.de/gpex.yml'
