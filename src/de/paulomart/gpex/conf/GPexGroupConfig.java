@@ -1,29 +1,52 @@
 package de.paulomart.gpex.conf;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import lombok.Getter;
 
 import de.paulomart.gpex.GPex;
 import de.paulomart.gpex.permissions.GPexGroup;
 import de.paulomart.gpex.permissions.GPexPermission;
+import de.paulomart.gpex.utils.ConfigUtils;
+import de.paulomart.gpex.utils.HttpUtils;
 
 @Getter
-public class GPexGroupConfig extends BaseConfig{
+public class GPexGroupConfig{
 	
 	private GPex gpex;
 	
 	private GPexGroup defaultGroup;
+	private YamlConfiguration config;
 	private HashMap<String, GPexGroup> groups = new HashMap<String, GPexGroup>();
 	
+	private File configFile;
+	
 	public GPexGroupConfig() {
-		super(GPex.getInstance(), "gpex.yml", null, false, true);
 		gpex = GPex.getInstance();
 	}
 
-	@Override
+	public void load(){
+		if (gpex.getGpexConfig().isWebLoaded()){
+			config = YamlConfiguration.loadConfiguration(HttpUtils.requestHttp(gpex.getGpexConfig().getWebURL()));
+		}else{
+			configFile = new File(gpex.getGpexConfig().getLocalPath());
+			config = YamlConfiguration.loadConfiguration(configFile);
+			
+			if (!configFile.exists()){
+				ConfigUtils.loadResource(gpex, "gpex.yml", config);
+				config.options().copyDefaults(true);
+				ConfigUtils.hardSave(config, configFile);
+			}
+		}
+		
+		onLoad();
+	}
+	
 	public void onLoad() {	
 		for (String groupName : config.getConfigurationSection("groups").getKeys(false)){		
 			String path = "groups."+groupName;
@@ -39,6 +62,26 @@ public class GPexGroupConfig extends BaseConfig{
 			String chatprefix = config.getString(path+".chatprefix");
 			String chatsuffix = config.getString(path+".chatsuffix");
 
+			if (inherited == null){
+				inherited = "";
+			}
+			
+			if (tabprefix == null){
+				tabprefix = "";
+			}
+			
+			if (tabsuffix == null){
+				tabsuffix = "";
+			}
+			
+			if (chatprefix == null){
+				chatprefix = "";
+			}
+			
+			if (chatsuffix == null){
+				chatsuffix = "";
+			}
+			
 			GPexGroup group = new GPexGroup(groupName, permissions, inherited, chatprefix, chatsuffix, tabprefix, tabsuffix);
 			groups.put(groupName, group);
 		}
@@ -84,7 +127,6 @@ public class GPexGroupConfig extends BaseConfig{
 		}
 	}
 		
-	@Override
 	public void onSave() {
 		
 	}	

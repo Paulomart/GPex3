@@ -1,0 +1,18 @@
+defaultgroup: Spieler
+groups:
+  Spieler:
+    tabprefix: '&7'
+    tabsuffix: ''
+    chatprefix: '&7'
+    chatsuffix: '&r'
+    inherited: ''
+    permissions:
+    - core.spawn
+  Owner:
+    tabprefix: TP
+    tabsuffix: TS
+    chatprefix: CP
+    chatsuffix: CS
+    inherited: Spieler
+    permissions:
+    - '*'

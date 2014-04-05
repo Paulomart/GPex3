@@ -16,6 +16,11 @@ public class GPexConfig extends BaseConfig{
 	private String mysqlDatabase;
 	private String mysqlTable;
 	private boolean useNameTagHooks = true;
+
+	//GroupConfig. -> gpex.yml
+	private boolean webLoaded = false;
+	private String webURL = "";
+	private String localPath = "gpex.yml";
 	
 	public GPexConfig(){
 		super(GPex.getInstance(), "config.yml", "config.yml", true, true);
@@ -31,6 +36,9 @@ public class GPexConfig extends BaseConfig{
 		mysqlUser = config.getString("mysql.user");
 		mysqlTable = config.getString("mysql.table");
 		useNameTagHooks = config.getBoolean("useNameTagHooks");
+		webLoaded = config.getBoolean("groupsConfig.webLoaded");
+		webURL = config.getString("groupsConfig.webURL");
+		localPath = config.getString("groupsConfig.localPath");
 	}
 
 	@Override

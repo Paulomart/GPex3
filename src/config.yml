@@ -6,3 +6,7 @@ mysql:
   user: user
   table: gpex3
 useNameTagHooks: true
+groupsConfig:
+  webLoaded: false
+  webURL: 'http://gpex.domain.de/gpex.yml'
+  localPath: 'plugins/GPex/gpex.yml'
