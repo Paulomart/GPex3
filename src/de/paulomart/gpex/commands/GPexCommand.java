@@ -31,6 +31,7 @@ public class GPexCommand implements CommandExecutor{
 			if ((args.length == 5 || args.length == 3) && args[0].equalsIgnoreCase("set")){
 				if (!sender.hasPermission("gpex.set")){
 					sender.sendMessage("§cYou don't have permissions for this command");
+					return true;
 				}
 				
 				String player = args[1];
@@ -63,12 +64,14 @@ public class GPexCommand implements CommandExecutor{
 				} catch (ParseException e) {
 					sender.sendMessage(e.toString());
 					sender.sendMessage("§cCan't prase json :/");
+					return true;
 				}
 			}
 			
 			if (((args.length == 5 || args.length == 3) && args[0].equalsIgnoreCase("reset"))){
 				if (!sender.hasPermission("gpex.reset")){
 					sender.sendMessage("§cYou don't have permissions for this command");
+					return true;
 				}
 				
 				String player = args[1];
@@ -109,38 +112,44 @@ public class GPexCommand implements CommandExecutor{
 				}
 				
 				sender.sendMessage("§aData updated");
-				
 				return true;
 			}
 			
 			if (args.length == 2 && args[0].equalsIgnoreCase("help")){
 				if (!sender.hasPermission("gpex.help")){
 					sender.sendMessage("§cYou don't have permissions for this command");
+					return true;
 				}
 				
 				if (args[1].equalsIgnoreCase("commands")){
 					sender.sendMessage("§b/gpex set §a<player> <data> §2[timelimit]");
 					sender.sendMessage("§b/gpex reset §a<player> <dataType> §2[timelimit]");
 					sender.sendMessage("§3If there is not timelimit, it will set/reset the base data.");
+					
 					return true;
 				}else if (args[1].equalsIgnoreCase("parameters")){
-					sender.sendMessage("§aData: §ba JSON String witch can contain this keys:");
+					sender.sendMessage("§aData: §ba JSON string witch can contain this keys:");
 					sender.sendMessage("§3Of type string: group, tabprefix, tabsuffix, chatprefix, chatsuffix");
 					sender.sendMessage("§3Of type array: permissions");
-					
-					sender.sendMessage("§aTimelimit: §ba Timestamp in this format: dd-MM-yyyy HH:mm:ss");
-					sender.sendMessage("§aDataType: §ba Typename of the Dataparameter, like group");
-					sender.sendMessage("§3Can be a list with , between Typenames");
-					sender.sendMessage("§cAll parameters don't accept spaces, exclusive the Timelimit parameter");
+					sender.sendMessage("§aTimelimit: §ba timestamp in this format: dd-MM-yyyy HH:mm:ss");
+					sender.sendMessage("§aDataType: §ba typename of the dataparameter, like group");
+					sender.sendMessage("§3Can be a list with , between typenames");
+					sender.sendMessage("§cAll parameters don't accept spaces, exclusive the timelimit parameter");
 					
 					return true;
 				}
 			}
 
-			sender.sendMessage("§bGPex3 v"+gpex.getDescription().getVersion()+" by Paul Heidenreich / Paulomart, for more infos visit: http://dl.paul-h.de/!GPex3");
-			sender.sendMessage("§b/gpex §ahelp commands/parameters");
+			if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help"))){
+				if (args.length == 0){
+					sender.sendMessage("§b§lGPex3 §bv"+gpex.getDescription().getVersion()+" §3by Paul Heidenreich / Paulomart, for more infos visit: http://dl.paul-h.de/!GPex3");
+				}
+				sender.sendMessage("§b/gpex §ahelp commands/parameters");
+			}else{
+				sender.sendMessage("§cUnknown command. Type /gpex for help");
+			}
+			return true;
 		}
-		
 		return false;
 	}
 
