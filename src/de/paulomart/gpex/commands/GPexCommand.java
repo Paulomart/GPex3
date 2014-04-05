@@ -166,7 +166,7 @@ public class GPexCommand implements CommandExecutor{
 					sender.sendMessage("§3Of type string: group, tabprefix, tabsuffix, chatprefix, chatsuffix");
 					sender.sendMessage("§3Of type array: permissions");
 					sender.sendMessage("§aTimelimit: §ba timestamp in this format: dd-MM-yyyy HH:mm:ss");
-					sender.sendMessage("&3Can be also relative in days in this format: <days> days");
+					sender.sendMessage("§3Can be also relative in days in this format: <days> days");
 					sender.sendMessage("§aDataType: §ba typename of the dataparameter, like group");
 					sender.sendMessage("§3Can be a list with , between typenames");
 					sender.sendMessage("§cDataType does not accept spaces!");
