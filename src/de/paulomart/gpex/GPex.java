@@ -96,7 +96,8 @@ public class GPex extends JavaPlugin{
 		log.info("| |  __| |__) |____  __ __) |");
 		log.info("| | |_ |  ___/ _ \\ \\/ /|__ < ");
 		log.info("| |__| | |  |  __/>  < ___) |");
-		log.info(" \\_____|_|   \\___/_/\\_\\____/ ");                            
+		log.info(" \\_____|_|   \\___/_/\\_\\____/ ");
+		log.info("");
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import lombok.Getter;
 import lombok.Setter;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.PermissibleBase;
@@ -15,7 +16,7 @@ import de.paulomart.gpex.permissions.GPexPermission;
 import de.paulomart.gpex.permissions.GPexPermissionData;
 import de.paulomart.gpex.utils.BukkitUtils;
 
-public class PermissibleGPex extends PermissibleBase{
+public class PermissibleGPex extends PermissibleBase {
 
 	public static enum PermissionValue {TRUE, FALSE, NOTSET};
 	public static final String DOTREG = "\\.";
@@ -42,7 +43,7 @@ public class PermissibleGPex extends PermissibleBase{
 
 		permissionData = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
 		for (GPexPermission gpexPermission : permissionData.getPermissions()){
-			calculateChilds(gpexPermission.getPermissionNode(), permissionRoot, gpexPermission.isPositive());
+			calculateChilds(gpexPermission.getPermissionNode().toLowerCase(), permissionRoot, gpexPermission.isPositive());
 		}
 	}	
 				
@@ -116,10 +117,26 @@ public class PermissibleGPex extends PermissibleBase{
 		}
 		return lastSetValue;
 	}
-	
+		
 	@Override
 	public boolean hasPermission(String permission){
-		return getValue(permission) == PermissionValue.TRUE;
+		permission = permission.toLowerCase();
+		PermissionValue res = getValue(permission);
+				
+		if (res != PermissionValue.NOTSET){
+			return res == PermissionValue.TRUE;
+		}else{
+			if (super.isPermissionSet(permission)){
+				return super.hasPermission(permission);
+			}
+			
+			Permission perm = Bukkit.getServer().getPluginManager().getPermission(permission);
+			if (perm != null){
+				return perm.getDefault().getValue(isOp());
+			}else{
+				return false;
+			}
+		}
 	}
 	
 	@Override
@@ -127,6 +144,16 @@ public class PermissibleGPex extends PermissibleBase{
 		return hasPermission(permission.getName());
 	}
 	
+	@Override
+	public boolean isPermissionSet(String permission) {
+		return getValue(permission.toLowerCase()) != PermissionValue.NOTSET;
+	}
+	
+	@Override	
+	public boolean isPermissionSet(Permission permission) {
+		return isPermissionSet(permission.getName());
+	}
+		
 	@Getter
 	public class ChildablePermission{
 		
