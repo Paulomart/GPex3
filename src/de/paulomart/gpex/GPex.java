@@ -86,6 +86,13 @@ public class GPex extends JavaPlugin{
 		getCommand("gpex").setExecutor(new GPexCommand());
 		
 		permissionManager = new PermissibleInjectManager();
+		
+		log.info("  _____ _____          ____  ");
+		log.info(" / ____|  __ \\        |___ \\ ");
+		log.info("| |  __| |__) |____  __ __) |");
+		log.info("| | |_ |  ___/ _ \\ \\/ /|__ < ");
+		log.info("| |__| | |  |  __/>  < ___) |");
+		log.info(" \\_____|_|   \\___/_/\\_\\____/ ");                            
 	}
 	
 	@Override

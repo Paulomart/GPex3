@@ -128,13 +128,7 @@ public class GPexGroupConfig{
 				group.getPermissions().addAll(inherited.getPermissions());
 			}
 		}	
-				
-		// Print Groups
-		for(String groupname : groups.keySet()) {
-			gpex.getLogger().info("----"+groupname+"----");
-			gpex.getLogger().info("Permissions: "+groups.get(groupname).toString());
-		}
-		
+						
 		defaultGroup = groups.get(config.getString("defaultgroup"));
 		if (defaultGroup == null){
 			//TODO ERROR HANDLING
