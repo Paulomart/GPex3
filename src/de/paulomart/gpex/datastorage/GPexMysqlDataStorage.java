@@ -77,7 +77,7 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 	}
 				
 	public boolean addToPermissionData(String player, Date date, GPexPermissionData newPermissionData, boolean merge){
-		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData("Paulomart"), false);
+		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(player), false);
 		SortedMap<Long, GPexPermissionData> permissionData = result.getSortedPermissionData();
 		if (!permissionData.containsKey(date.getTime())){
 			permissionData.put(date.getTime(), newPermissionData);
@@ -93,7 +93,7 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 	}
 	
 	public boolean setBasePermissionData(String player, GPexPermissionData newPermissionData, boolean merge){
-		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData("Paulomart"), false);
+		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(player), false);
 		GPexPermissionData basePermissionData;
 		if (merge){
 			basePermissionData = result.getBasePlayerPermissions();
