@@ -25,7 +25,7 @@ public class HttpUtils {
 		urlConnection.setDoInput(true);
 		urlConnection.setDoOutput(true);
 		urlConnection.setRequestProperty("content-type","application/x-www-form-urlencoded");
-		urlConnection.setRequestProperty("User-Agent", "ServerCorePlugin");
+		urlConnection.setRequestProperty("User-Agent", "GPEX Webrequest");
 		return urlConnection.getInputStream();
 	}
 	
