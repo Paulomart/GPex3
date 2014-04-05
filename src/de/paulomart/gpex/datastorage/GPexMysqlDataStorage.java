@@ -18,6 +18,7 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 
 	@Getter
 	private String mysqlTable;
+	private PreparedStatement createTableStmt;
 	private PreparedStatement selectPlayerDataStmt;
 	private PreparedStatement updatePlayerDataStmt;
 	private GPex gpex;
@@ -29,12 +30,14 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		
 		try {
 			preparePrepardStatemantes();
+			createTableStmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void preparePrepardStatemantes() throws SQLException{
+		createTableStmt = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `"+mysqlTable+"` ( `name` varchar(16) NOT NULL, `data` varchar(2048) DEFAULT '', UNIQUE KEY `name` (`name`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 		selectPlayerDataStmt = conn.prepareStatement("select (`data`) from `"+mysqlTable+"` where `name` like ? limit 1");
 		updatePlayerDataStmt = conn.prepareStatement("insert into `"+mysqlTable+"` (`data`, `name`) values(?, ?) on duplicate key update data = values(data)");
 	}
@@ -44,6 +47,7 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		try {
 			selectPlayerDataStmt.close();
 			updatePlayerDataStmt.close();
+			createTableStmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
