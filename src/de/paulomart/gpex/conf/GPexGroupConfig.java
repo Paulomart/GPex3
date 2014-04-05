@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import lombok.Getter;
@@ -85,7 +86,20 @@ public class GPexGroupConfig{
 			GPexGroup group = new GPexGroup(groupName, permissions, inherited, chatprefix, chatsuffix, tabprefix, tabsuffix);
 			groups.put(groupName, group);
 		}
-				
+			
+		String serverName = Bukkit.getServer().getServerName();
+		if (config.isSet("serverpex."+serverName)){
+			for (String groupName : config.getConfigurationSection("serverpex."+serverName).getKeys(false)){
+				GPexGroup group = groups.get(groupName);
+				if  (group == null){
+					continue;
+				}
+				for (String permission : config.getStringList("serverpex."+serverName+"."+groupName+".permissions")){
+					group.getPermissions().add(new GPexPermission(permission));
+				}
+			}
+		}
+
 		// get(Num) -> num = keyset.array[Num] -> Group
 		// get(Num) = inherited Count
 		
