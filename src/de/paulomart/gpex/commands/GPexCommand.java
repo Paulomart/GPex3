@@ -28,23 +28,40 @@ public class GPexCommand implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		//TODO: Should make all the commands threads.
 		if (cmd.getName().equalsIgnoreCase("gpex")){
-			if ((args.length == 5 || args.length == 3) && args[0].equalsIgnoreCase("set")){
+			if (args.length >= 3 && args[0].equalsIgnoreCase("set")){
 				if (!sender.hasPermission("gpex.set")){
 					sender.sendMessage("§cYou don't have permissions for this command");
 					return true;
 				}
 				
 				String player = args[1];
+				String praseJson = "";
+				String praseDate = null;					
+				int lastJson = args.length-1;
+				
+				if (!args[lastJson].endsWith("}")){
+					//prase with out date.
+					lastJson = lastJson-2;
+				}
+				
+				for (int i = 2; i < lastJson+1; i++){
+					praseJson += " "+args[i];
+				}
+				
+				if (lastJson != args.length-1){
+					praseDate = args[lastJson+1]+" "+args[lastJson+2];
+				}
+				
 				try {
-					JSONParser parser = new JSONParser();
+					JSONParser parser = new JSONParser();				
 					@SuppressWarnings("unchecked")
-					Map<String, Object> json = (Map<String, Object>) parser.parse(args[2], gpex.getJsonConverter().getContainerFactory());
+					Map<String, Object> json = (Map<String, Object>) parser.parse(praseJson, gpex.getJsonConverter().getContainerFactory());
 					GPexPermissionData permissionData =	gpex.getJsonConverter().constructPermissionData(json, false);
-					if (args.length == 5){
+					if (praseDate != null){
 						//timelimit
-						Date date = DateUtils.dateFromString(args[3]+ " " +args[4]);
+						Date date = DateUtils.dateFromString(praseDate);
 						if (date == null){
-							sender.sendMessage("§cCan't prase date :/");
+							sender.sendMessage("§cCan't prase date: \""+praseDate+"\"");
 							return false;
 						}
 						gpex.getGpexDataStorage().addToPermissionData(player, date, permissionData, true);
@@ -53,7 +70,7 @@ public class GPexCommand implements CommandExecutor{
 						gpex.getGpexDataStorage().setBasePermissionData(player, permissionData, true);
 					}
 					
-					sender.sendMessage("§aData updated");
+					sender.sendMessage("§aData updated for "+player);
 					
 					Player playerTarget = Bukkit.getServer().getPlayer(player);
 					if (playerTarget != null){
@@ -63,7 +80,7 @@ public class GPexCommand implements CommandExecutor{
 					return true;
 				} catch (ParseException e) {
 					sender.sendMessage(e.toString());
-					sender.sendMessage("§cCan't prase json :/");
+					sender.sendMessage("§cCan't prase json: \""+praseJson+"\"");
 					return true;
 				}
 			}
@@ -81,13 +98,13 @@ public class GPexCommand implements CommandExecutor{
 					//timelimit
 					Date date = DateUtils.dateFromString(args[3]+ " " +args[4]);
 					if (date == null){
-						sender.sendMessage("§cCan't prase date :/");
+						sender.sendMessage("§cCan't prase date: \""+args[3]+ " " +args[4]+"\"");
 						return false;
 					}
 					
 					GPexPermissionData permissionData = sortResult.getSortedPermissionData().get(date.getTime());
 					if (permissionData == null){
-						sender.sendMessage("§cNothing to reset.");
+						sender.sendMessage("§cNothing to reset");
 						return false;
 					}
 					
@@ -98,7 +115,7 @@ public class GPexCommand implements CommandExecutor{
 					GPexPermissionData permissionData = sortResult.getBasePlayerPermissions();
 					
 					if (permissionData == null){
-						sender.sendMessage("§cNothing to reset.");
+						sender.sendMessage("§cNothing to reset");
 						return false;
 					}
 					
@@ -111,7 +128,7 @@ public class GPexCommand implements CommandExecutor{
 					playerTarget.recalculatePermissions();
 				}
 				
-				sender.sendMessage("§aData updated");
+				sender.sendMessage("§aData updated for "+player);
 				return true;
 			}
 			
@@ -134,7 +151,7 @@ public class GPexCommand implements CommandExecutor{
 					sender.sendMessage("§aTimelimit: §ba timestamp in this format: dd-MM-yyyy HH:mm:ss");
 					sender.sendMessage("§aDataType: §ba typename of the dataparameter, like group");
 					sender.sendMessage("§3Can be a list with , between typenames");
-					sender.sendMessage("§cAll parameters don't accept spaces, exclusive the timelimit parameter");
+					sender.sendMessage("§cDataType does not accept spaces!");
 					
 					return true;
 				}
@@ -146,7 +163,7 @@ public class GPexCommand implements CommandExecutor{
 				}
 				sender.sendMessage("§b/gpex §ahelp commands/parameters");
 			}else{
-				sender.sendMessage("§cUnknown command. Type /gpex for help");
+				sender.sendMessage("§cUnknown command. Type \"/gpex\" for help");
 			}
 			return true;
 		}
