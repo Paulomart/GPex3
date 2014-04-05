@@ -9,10 +9,10 @@ groups:
     permissions:
     - core.spawn
   Owner:
-    tabprefix: TP
-    tabsuffix: TS
-    chatprefix: CP
-    chatsuffix: CS
+    tabprefix: '&c'
+    tabsuffix: ''
+    chatprefix: '&c'
+    chatsuffix: '&r'
     inherited: Spieler
     permissions:
     - '*'
