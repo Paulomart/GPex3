@@ -70,7 +70,11 @@ public class GPex extends JavaPlugin{
 			log.info("Hooked with ServerCore");
 			gpexNameTagManager = new ServerCoreImplemention();
 		}else{
-			log.info("No NameTag hook found");
+			if (gpexConfig.isUseNameTagHooks()){
+				log.info("No NameTag hook found");
+			}else{
+				log.info("NameTag hooking is disabled in the config.");
+			}
 			gpexNameTagManager = new NoNameTagChangeImplemention();
 		}
 		

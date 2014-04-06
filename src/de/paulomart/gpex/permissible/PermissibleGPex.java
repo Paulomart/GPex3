@@ -88,7 +88,7 @@ public class PermissibleGPex extends PermissibleBase {
 			}, "GPexPermissible, recalculatingPermissions for "+player.getName()
 			).start();
 		}
-	}	
+	}
 	
 	public PermissionValue getValue(String permission){
 		return getValue(permission, permissionRoot, permission, PermissionValue.NOTSET);
