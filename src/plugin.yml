@@ -1,5 +1,5 @@
 name: GPex
-version: 3.0.2-Alpha
+version: 3.0.3-Alpha
 main: de.paulomart.gpex.GPex
 Authors: [Paulomart]
 softdepend: [NametagEdit, ServerCore]

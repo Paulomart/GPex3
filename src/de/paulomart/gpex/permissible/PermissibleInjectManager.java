@@ -72,6 +72,28 @@ public class PermissibleInjectManager {
 		}
 	}
 
+	public PermissibleGPex getPermissible(Player player){
+		try {
+			PermissibleGPex permissible = null;
+			for (PermissibleInjector injector : injectors) {
+				if (injector.isApplicable(player)) {
+					Permissible pexPerm = injector.getPermissible(player);
+					if (pexPerm instanceof PermissibleGPex) {
+						permissible = (PermissibleGPex) pexPerm;
+					}
+				}
+			}
+			
+			if (permissible == null) {
+				gpex.getLogger().warning("No Permissible injector found for your server implementation (while getPermissible for " + player.getName() + "!");
+			}
+			return permissible;
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	private void uninjectPermissible(Player player) {
 		try {
 			boolean success = false;

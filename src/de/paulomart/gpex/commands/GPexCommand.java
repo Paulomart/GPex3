@@ -87,13 +87,12 @@ public class GPexCommand implements CommandExecutor{
 						gpex.getGpexDataStorage().setBasePermissionData(player, permissionData, true);
 					}
 					
-					sender.sendMessage("§aData updated for "+player);
-					
 					Player playerTarget = Bukkit.getServer().getPlayer(player);
 					if (playerTarget != null){
-						playerTarget.recalculatePermissions();
+						gpex.getPermissionManager().getPermissible(playerTarget).recalculatePermissions(true);
 					}
 					
+					sender.sendMessage("§aData updated for "+player);
 					return true;
 				} catch (ParseException e) {
 					sender.sendMessage(e.toString());
@@ -142,7 +141,7 @@ public class GPexCommand implements CommandExecutor{
 				
 				Player playerTarget = Bukkit.getServer().getPlayer(player);
 				if (playerTarget != null){
-					playerTarget.recalculatePermissions();
+					gpex.getPermissionManager().getPermissible(playerTarget).recalculatePermissions(true);
 				}
 				
 				sender.sendMessage("§aData updated for "+player);

@@ -68,12 +68,11 @@ public class PermissibleGPex extends PermissibleBase {
 		}
 	}
 	
-	@Override
-	public void recalculatePermissions(){
+	public void recalculatePermissions(boolean force){
 		if (gpex == null){
 			return;
 		}
-		if (lastPermissionDataUpdate + CASHETIME <= System.currentTimeMillis()){
+		if (lastPermissionDataUpdate + CASHETIME <= System.currentTimeMillis() || force){
 			lastPermissionDataUpdate = System.currentTimeMillis();
 			new Thread(new Runnable() {
 				@Override
@@ -88,6 +87,11 @@ public class PermissibleGPex extends PermissibleBase {
 			}, "GPexPermissible, recalculatingPermissions for "+player.getName()
 			).start();
 		}
+	}
+	
+	@Override
+	public void recalculatePermissions(){
+		recalculatePermissions(false);
 	}
 	
 	public PermissionValue getValue(String permission){
