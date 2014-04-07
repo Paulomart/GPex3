@@ -1,5 +1,9 @@
 package de.paulomart.gpex;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.ConnectException;
 import java.util.logging.Logger;
 
 import lombok.Getter;
@@ -19,6 +23,7 @@ import de.paulomart.gpex.tag.GPexNameTagManager;
 import de.paulomart.gpex.tag.NameTagEditPluginImplemention;
 import de.paulomart.gpex.tag.NoNameTagChangeImplemention;
 import de.paulomart.gpex.tag.ServerCoreImplemention;
+import de.paulomart.gpex.utils.ClassUtils;
 import de.paulomart.gpex.utils.mysql.MysqlDatabaseConnector;
 
 public class GPex extends JavaPlugin{
@@ -49,43 +54,48 @@ public class GPex extends JavaPlugin{
 		instance = this;
 		log = getLogger();
 		
-		log.warning("################  W A R N I N G  ###################");
-		log.warning("YOU ARE USING A UNSTABLE BUILD OF GPEX.");
-		log.warning("IT MAY BREAK YOUR SERVER AND ALL THE THINGS");
-		log.warning("PLESE CONSIDER DOWNLOADING A STABLE BUILD.");
-		log.warning(">>>> http://dl.paul-h.de/!GPex <<<<");
-		log.warning("####################################################");
-		
+		log.info("Loading Config..");
 		gpexConfig = new GPexConfig();
 		gpexConfig.load();
 		
+		log.info("Loading GroupConfig..");
 		groupConfig = new GPexGroupConfig();
 		groupConfig.load();
-		
+			
 		//Check what plugins we have, that we can use to make cool stuff.
-		if (Bukkit.getServer().getPluginManager().isPluginEnabled("NametagEdit") && gpexConfig.isUseNameTagHooks()){
-			log.info("Hooked with NametagEdit");
-			gpexNameTagManager = new NameTagEditPluginImplemention();
-		}else if (Bukkit.getServer().getPluginManager().isPluginEnabled("ServerCore") && gpexConfig.isUseNameTagHooks()){
-			log.info("Hooked with ServerCore");
-			gpexNameTagManager = new ServerCoreImplemention();
-		}else{
-			if (gpexConfig.isUseNameTagHooks()){
-				log.info("No NameTag hook found");
+		if (gpexConfig.isUseNameTagHooks()){
+			log.info("Searching for NameTag hook..");
+			
+			if (Bukkit.getServer().getPluginManager().isPluginEnabled("NametagEdit")){
+				gpexNameTagManager = new NameTagEditPluginImplemention();
+				log.info("Hooked with NametagEdit");
+				
+			}else if (Bukkit.getServer().getPluginManager().isPluginEnabled("ServerCore")){
+				gpexNameTagManager = new ServerCoreImplemention();
+				log.info("Hooked with ServerCore");
+				
 			}else{
-				log.info("NameTag hooking is disabled in the config.");
+				gpexNameTagManager = new NoNameTagChangeImplemention();
+				log.info("No NameTag hook found");
+				
 			}
+		}else{
 			gpexNameTagManager = new NoNameTagChangeImplemention();
+			log.info("NameTag hooking is disabled in the config");
+			
 		}
 		
+		log.info("Loading JSON..");
 		jsonConverter = new JsonConverter();
 		
+		log.info("Starting Mysql Connection..");
 		mysqlConnector = new MysqlDatabaseConnector(this, gpexConfig.getMysqlHost(), gpexConfig.getMysqlPort(), gpexConfig.getMysqlUser(), gpexConfig.getMysqlPassword(), gpexConfig.getMysqlDatabase());
 		
 		if (mysqlConnector.connect()){
 			log.info("Connected to mysql.");
 		}else{
-			log.warning("Could not connect to mysql. exiting.");
+			stop(new ConnectException("Could not connect to mysql"));
+			return;
 		}
 		
 		gpexDataStorage = new GPexMysqlDataStorage(mysqlConnector, gpexConfig.getMysqlTable());
@@ -111,4 +121,34 @@ public class GPex extends JavaPlugin{
 		gpexConfig.save();
 		
 	}	
+	
+	public String getVersion(){
+		return getDescription().getVersion();
+	}
+	
+	@Override
+	public String toString(){
+		return ClassUtils.classToString(this);
+	}
+	
+	public void stop(Exception exception){
+		exception.printStackTrace();
+		log.severe("GPex has stopped running, see exception above.");
+		try {
+			String fileName = "gpex-crashreport.log";
+			FileWriter fileWriter = new FileWriter(new File(fileName));
+			fileWriter.write("# GPex crashreport. - Version: "+getVersion());
+			fileWriter.write("\n# Its mutch, we know.\n");
+			fileWriter.write("\n\n# Exception\n\n");
+			fileWriter.write(exception.toString());
+			fileWriter.write("\n\n# GPex-State\n\n");
+			fileWriter.write(toString().replaceFirst(gpexConfig.getMysqlPassword(), "--PASSWORD REMOVED--"));
+			fileWriter.write("\n# You won one free hug! Reedem at @Paulomart");
+			fileWriter.flush();
+			fileWriter.close();
+			log.severe("The full error was pasted into \""+fileName+"\"");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }

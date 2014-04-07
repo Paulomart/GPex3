@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import de.paulomart.gpex.GPex;
 import de.paulomart.gpex.utils.BukkitUtils;
+import de.paulomart.gpex.utils.ClassUtils;
 
 @Getter
 public class GPexConfig extends BaseConfig{
@@ -49,6 +50,10 @@ public class GPexConfig extends BaseConfig{
 		
 	}
 
+	@Override
+	public String toString(){
+		return ClassUtils.classToString(this, gpex);
+	}
 	
 	
 }

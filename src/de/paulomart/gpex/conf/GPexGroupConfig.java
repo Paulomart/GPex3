@@ -13,6 +13,7 @@ import lombok.Getter;
 import de.paulomart.gpex.GPex;
 import de.paulomart.gpex.permissions.GPexGroup;
 import de.paulomart.gpex.permissions.GPexPermission;
+import de.paulomart.gpex.utils.ClassUtils;
 import de.paulomart.gpex.utils.ConfigUtils;
 import de.paulomart.gpex.utils.HttpUtils;
 
@@ -131,11 +132,16 @@ public class GPexGroupConfig{
 						
 		defaultGroup = groups.get(config.getString("defaultgroup"));
 		if (defaultGroup == null){
-			//TODO ERROR HANDLING
+			gpex.stop(new NullPointerException("Cant find defaultGroup!"));
 		}
 	}
 		
 	public void onSave() {
 		
 	}	
+	
+	@Override
+	public String toString(){
+		return ClassUtils.classToString(this, gpex);
+	}
 }

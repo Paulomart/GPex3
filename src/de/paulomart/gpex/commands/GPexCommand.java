@@ -176,7 +176,7 @@ public class GPexCommand implements CommandExecutor{
 
 			if (args.length == 0 || (args.length == 1 && args[0].equalsIgnoreCase("help"))){
 				if (args.length == 0){
-					sender.sendMessage("§b§lGPex3 §bv"+gpex.getDescription().getVersion()+" §3by Paul Heidenreich / Paulomart, for more infos visit: http://dl.paul-h.de/!GPex3");
+					sender.sendMessage("§b§lGPex3 §bv"+gpex.getVersion()+" §3by Paul Heidenreich / Paulomart, for more infos visit: http://dl.paul-h.de/!GPex3");
 				}
 				sender.sendMessage("§b/gpex §ahelp commands/parameters");
 			}else{

@@ -12,6 +12,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.permissions.Permissible;
 
 import de.paulomart.gpex.GPex;
+import de.paulomart.gpex.utils.ClassUtils;
 import static de.paulomart.gpex.utils.CraftBukkitInterface.getCBClassName;
 
 /**
@@ -117,6 +118,11 @@ public class PermissibleInjectManager {
 		}
 	}
 
+	@Override
+	public String toString(){
+		return ClassUtils.classToString(this, gpex);
+	}
+	
 	private void uninjectAllPermissibles() {
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			uninjectPermissible(player);
