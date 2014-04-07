@@ -48,6 +48,8 @@ public class GPex extends JavaPlugin{
 	private PlayerListener playerListener;
 	
 	private Logger log;
+	@Getter
+	private boolean crashed = false;
 	
 	@Override
 	public void onEnable(){
@@ -116,10 +118,17 @@ public class GPex extends JavaPlugin{
 	
 	@Override
 	public void onDisable(){
-		permissionManager.onDisable();
-		mysqlConnector.dissconnect();
-		gpexConfig.save();
-		
+		try{
+			permissionManager.onDisable();
+			mysqlConnector.dissconnect();
+			gpexConfig.save();
+		} catch (Exception exception){
+			if (!crashed){
+				stop(exception);
+			}else{
+				log.severe("GPex crashed while disabling, but it was allready crashing so I did not log the errors");
+			}
+		}
 	}	
 	
 	public String getVersion(){
@@ -150,5 +159,7 @@ public class GPex extends JavaPlugin{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		crashed = true;
+		setEnabled(false);
 	}
 }
