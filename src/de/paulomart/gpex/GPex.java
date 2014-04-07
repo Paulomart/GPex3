@@ -151,7 +151,7 @@ public class GPex extends JavaPlugin{
 			fileWriter.write("\n\n# Exception\n\n");
 			fileWriter.write(exception.toString());
 			fileWriter.write("\n\n# GPex-State\n\n");
-			fileWriter.write(toString().replaceFirst(gpexConfig.getMysqlPassword(), "--PASSWORD REMOVED--"));
+			fileWriter.write(toString().replaceFirst(gpexConfig.getMysqlPassword(), "--PASSWORD-REMOVED--"));
 			fileWriter.write("\n# You won one free hug! Reedem at @Paulomart");
 			fileWriter.flush();
 			fileWriter.close();
