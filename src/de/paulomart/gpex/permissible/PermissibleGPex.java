@@ -82,7 +82,7 @@ public class PermissibleGPex extends PermissibleBase {
 						calculateChilds(gpexPermission.getPermissionNode(), permissionRoot, gpexPermission.isPositive());
 					}
 					player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
-					gpex.getGpexNameTagManager().setNameTag(player, permissionData.getTabPrefix(), permissionData.getTabSuffix());
+					gpex.getGpexNameTagManager().setNameTag(player, BukkitUtils.short16(permissionData.getTabPrefix()), BukkitUtils.short16(permissionData.getTabSuffix()));
 				}
 			}, "GPexPermissible, recalculatingPermissions for "+player.getName()
 			).start();

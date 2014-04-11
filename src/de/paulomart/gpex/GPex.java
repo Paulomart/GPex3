@@ -143,6 +143,7 @@ public class GPex extends JavaPlugin{
 	public void stop(Exception exception){
 		exception.printStackTrace();
 		log.severe("GPex has stopped running, see exception above.");
+		crashed = true;
 		try {
 			String fileName = "gpex-crashreport.log";
 			FileWriter fileWriter = new FileWriter(new File(fileName));
@@ -159,7 +160,6 @@ public class GPex extends JavaPlugin{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		crashed = true;
 		setEnabled(false);
 	}
 }

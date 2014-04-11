@@ -20,6 +20,6 @@ public class PlayerListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		event.setFormat(ChatColor.RESET+gpex.getGpexConfig().getChatFormat()+ChatColor.RESET);
+		event.setFormat(ChatColor.RESET+gpex.getGpexConfig().getChatFormat());
 	}
 }
