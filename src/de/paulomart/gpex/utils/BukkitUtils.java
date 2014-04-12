@@ -1,6 +1,8 @@
 package de.paulomart.gpex.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 public class BukkitUtils {
 
@@ -17,5 +19,14 @@ public class BukkitUtils {
 			str = str.substring(0, wantLength-1);
 		}
 		return str;
+	}
+	
+	public static Player getPlayer(String name){
+		for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()){
+			if (onlinePlayer.getName().equalsIgnoreCase(name)){
+				return onlinePlayer;
+			}
+		}
+		return null;
 	}
 }

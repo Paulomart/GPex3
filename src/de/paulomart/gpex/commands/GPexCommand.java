@@ -3,8 +3,8 @@ package de.paulomart.gpex.commands;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
+import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +15,7 @@ import org.json.simple.parser.ParseException;
 import de.paulomart.gpex.GPex;
 import de.paulomart.gpex.datastorage.JsonConverter.SortResult;
 import de.paulomart.gpex.permissions.GPexPermissionData;
+import de.paulomart.gpex.utils.BukkitUtils;
 import de.paulomart.gpex.utils.DateUtils;
 
 public class GPexCommand implements CommandExecutor{
@@ -27,15 +28,21 @@ public class GPexCommand implements CommandExecutor{
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		//TODO: Should make all the commands threads.
+		//TODO: Should make all the commands threads.		
 		if (cmd.getName().equalsIgnoreCase("gpex")){
-			if (args.length >= 3 && args[0].equalsIgnoreCase("set")){
+			if (args.length >= 3 && args[0].equalsIgnoreCase("set")){				
 				if (!sender.hasPermission("gpex.set")){
 					sender.sendMessage("§cYou don't have permissions for this command");
 					return true;
 				}
 				
-				String player = args[1];
+				Player playerTarget = BukkitUtils.getPlayer(args[1]);
+				if (playerTarget == null){
+					sender.sendMessage("&cCant find player");
+					return true;					
+				}
+				
+				UUID uuid = playerTarget.getUniqueId();
 				String parseJson = "";
 				String parseDate = null;					
 				int lastJson = args.length-1;
@@ -81,18 +88,15 @@ public class GPexCommand implements CommandExecutor{
 							}
 						}
 						
-						gpex.getGpexDataStorage().addToPermissionData(player, date, permissionData, true);
+						gpex.getGpexDataStorage().addToPermissionData(uuid, date, permissionData, true);
 					}else{
 						//edit base
-						gpex.getGpexDataStorage().setBasePermissionData(player, permissionData, true);
+						gpex.getGpexDataStorage().setBasePermissionData(uuid, permissionData, true);
 					}
 					
-					Player playerTarget = Bukkit.getServer().getPlayer(player);
-					if (playerTarget != null){
-						gpex.getPermissionManager().getPermissible(playerTarget).recalculatePermissions(true);
-					}
+					gpex.getPermissionManager().getPermissible(playerTarget).recalculatePermissions(true);
 					
-					sender.sendMessage("§aData updated for "+player);
+					sender.sendMessage("§aData updated for "+playerTarget.getName());
 					return true;
 				} catch (ParseException e) {
 					sender.sendMessage(e.toString());
@@ -107,8 +111,14 @@ public class GPexCommand implements CommandExecutor{
 					return true;
 				}
 				
-				String player = args[1];
-				SortResult sortResult = gpex.getJsonConverter().getSortedActivePermissions(gpex.getGpexDataStorage().getJSONData(player), false);
+				Player playerTarget = BukkitUtils.getPlayer(args[1]);
+				if (playerTarget == null){
+					sender.sendMessage("&cCant find player");
+					return true;					
+				}
+				
+				UUID uuid = playerTarget.getUniqueId();
+				SortResult sortResult = gpex.getJsonConverter().getSortedActivePermissions(gpex.getGpexDataStorage().getJSONData(uuid), false);
 				
 				if (args.length == 5){
 					//timelimit
@@ -125,7 +135,7 @@ public class GPexCommand implements CommandExecutor{
 					}
 					
 					permissionData = gpex.getJsonConverter().resetData(permissionData, args[2].split(","));
-					gpex.getGpexDataStorage().addToPermissionData(player, date, permissionData, false);
+					gpex.getGpexDataStorage().addToPermissionData(uuid, date, permissionData, false);
 				}else{
 					//edit base
 					GPexPermissionData permissionData = sortResult.getBasePlayerPermissions();
@@ -136,15 +146,13 @@ public class GPexCommand implements CommandExecutor{
 					}
 					
 					permissionData = gpex.getJsonConverter().resetData(permissionData, args[2].split(","));
-					gpex.getGpexDataStorage().setBasePermissionData(player, permissionData, false);
+					gpex.getGpexDataStorage().setBasePermissionData(uuid, permissionData, false);
 				}	
 				
-				Player playerTarget = Bukkit.getServer().getPlayer(player);
-				if (playerTarget != null){
-					gpex.getPermissionManager().getPermissible(playerTarget).recalculatePermissions(true);
-				}
+				gpex.getPermissionManager().getPermissible(playerTarget).recalculatePermissions(true);
 				
-				sender.sendMessage("§aData updated for "+player);
+				
+				sender.sendMessage("§aData updated for "+playerTarget.getName());
 				return true;
 			}
 			

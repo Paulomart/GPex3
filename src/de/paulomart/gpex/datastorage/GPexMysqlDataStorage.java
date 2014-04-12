@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.SortedMap;
+import java.util.UUID;
 
 import lombok.Getter;
 
@@ -37,7 +38,7 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 	}
 
 	public void preparePrepardStatemantes() throws SQLException{
-		createTableStmt = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `"+mysqlTable+"` ( `name` varchar(16) NOT NULL, `data` varchar(2048) DEFAULT '', UNIQUE KEY `name` (`name`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+		createTableStmt = conn.prepareStatement("CREATE TABLE IF NOT EXISTS `"+mysqlTable+"` ( `name` varchar(36) NOT NULL, `data` varchar(2048) DEFAULT '', UNIQUE KEY `name` (`name`)) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 		selectPlayerDataStmt = conn.prepareStatement("select (`data`) from `"+mysqlTable+"` where `name` like ? limit 1");
 		updatePlayerDataStmt = conn.prepareStatement("insert into `"+mysqlTable+"` (`data`, `name`) values(?, ?) on duplicate key update data = values(data)");
 	}
@@ -53,10 +54,10 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		}
 	}
 	
-	public synchronized boolean setJSONData(String player, String data){
+	public synchronized boolean setJSONData(UUID uuid, String data){
 		try {
 			updatePlayerDataStmt.setString(1, data);
-			updatePlayerDataStmt.setString(2, player);
+			updatePlayerDataStmt.setString(2, uuid.toString());
 			return (updatePlayerDataStmt.executeUpdate() == 1 ? true : false);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -64,10 +65,10 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		return false;
 	}
 	
-	public synchronized String getJSONData(String player){
+	public synchronized String getJSONData(UUID uuid){
 		String ret = "{}";
 		try {
-			selectPlayerDataStmt.setString(1, player);
+			selectPlayerDataStmt.setString(1, uuid.toString());
 
 			ResultSet result = selectPlayerDataStmt.executeQuery();
 			if (result.next()){
@@ -80,8 +81,8 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		return ret;
 	}
 				
-	public boolean addToPermissionData(String player, Date date, GPexPermissionData newPermissionData, boolean merge){
-		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(player), false);
+	public boolean addToPermissionData(UUID uuid, Date date, GPexPermissionData newPermissionData, boolean merge){
+		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(uuid), false);
 		SortedMap<Long, GPexPermissionData> permissionData = result.getSortedPermissionData();
 		if (!permissionData.containsKey(date.getTime())){
 			permissionData.put(date.getTime(), newPermissionData);
@@ -93,11 +94,11 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 				permissionData.put(date.getTime(), newPermissionData);
 			}			
 		}
-		return setJSONData(player, gpex.getJsonConverter().constructJson(permissionData, result.getBasePlayerPermissions()));
+		return setJSONData(uuid, gpex.getJsonConverter().constructJson(permissionData, result.getBasePlayerPermissions()));
 	}
 	
-	public boolean setBasePermissionData(String player, GPexPermissionData newPermissionData, boolean merge){
-		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(player), false);
+	public boolean setBasePermissionData(UUID uuid, GPexPermissionData newPermissionData, boolean merge){
+		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(uuid), false);
 		GPexPermissionData basePermissionData;
 		if (merge){
 			basePermissionData = result.getBasePlayerPermissions();
@@ -109,12 +110,12 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		}else{
 			basePermissionData = newPermissionData;
 		}
-		return setJSONData(player, gpex.getJsonConverter().constructJson(result.getSortedPermissionData(), basePermissionData));
+		return setJSONData(uuid, gpex.getJsonConverter().constructJson(result.getSortedPermissionData(), basePermissionData));
 	}
 
 	@Override
-	public GPexPermissionData getPermissionData(String player) {
-		SortResult sortResult = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(player), true);
+	public GPexPermissionData getPermissionData(UUID uuid) {
+		SortResult sortResult = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(uuid), true);
 		SortedMap<Long, GPexPermissionData> sortedPermissionData = sortResult.getSortedPermissionData();
 		GPexPermissionData playerPermissions = sortResult.getBasePlayerPermissions();
 		

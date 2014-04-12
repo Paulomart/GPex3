@@ -77,7 +77,7 @@ public class PermissibleGPex extends PermissibleBase {
 			new Thread(new Runnable() {
 				@Override
 				public void run() {
-					permissionData = gpex.getGpexDataStorage().getPermissionData(player.getName());
+					permissionData = gpex.getGpexDataStorage().getPermissionData(player.getUniqueId());
 					for (GPexPermission gpexPermission : permissionData.getPermissions()){
 						calculateChilds(gpexPermission.getPermissionNode(), permissionRoot, gpexPermission.isPositive());
 					}
