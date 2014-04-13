@@ -38,7 +38,7 @@ public class GPexCommand implements CommandExecutor{
 				
 				Player playerTarget = BukkitUtils.getPlayer(args[1]);
 				if (playerTarget == null){
-					sender.sendMessage("&cCant find player");
+					sender.sendMessage("§cCant find player");
 					return true;					
 				}
 				
@@ -113,7 +113,7 @@ public class GPexCommand implements CommandExecutor{
 				
 				Player playerTarget = BukkitUtils.getPlayer(args[1]);
 				if (playerTarget == null){
-					sender.sendMessage("&cCant find player");
+					sender.sendMessage("§cCant find player");
 					return true;					
 				}
 				
