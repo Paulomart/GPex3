@@ -9,10 +9,8 @@ import org.bukkit.entity.Player;
  */
 public class NoNameTagChangeImplemention implements GPexNameTagManager{
 
-	@Override
 	public void setNameTag(Player player, String prefix, String suffix) {}
 
-	@Override
 	public void removeNameTag(Player player) {}
 
 }

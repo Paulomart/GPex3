@@ -12,12 +12,10 @@ public class ServerCoreImplemention implements GPexNameTagManager {
 		coreApi = ServerCoreApi.getInstance();
 	}
 	
-	@Override
 	public void setNameTag(Player player, String prefix, String suffix) {
 		coreApi.getNametagAPI().setNametag(player.getName(), prefix, suffix);
 	}
 
-	@Override
 	public void removeNameTag(Player player) {
 		coreApi.getNametagAPI().resetNametag(player.getName());
 	}

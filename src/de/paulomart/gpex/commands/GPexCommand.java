@@ -26,7 +26,6 @@ public class GPexCommand implements CommandExecutor{
 		gpex = GPex.getInstance();
 	}
 	
-	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		//TODO: Should make all the commands threads.		
 		if (cmd.getName().equalsIgnoreCase("gpex")){

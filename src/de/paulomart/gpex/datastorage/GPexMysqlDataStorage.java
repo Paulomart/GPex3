@@ -113,7 +113,6 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 		return setJSONData(uuid, gpex.getJsonConverter().constructJson(result.getSortedPermissionData(), basePermissionData));
 	}
 
-	@Override
 	public GPexPermissionData getPermissionData(UUID uuid) {
 		SortResult sortResult = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(uuid), true);
 		SortedMap<Long, GPexPermissionData> sortedPermissionData = sortResult.getSortedPermissionData();
