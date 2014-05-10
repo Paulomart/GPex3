@@ -3,15 +3,10 @@ package de.paulomart.gpex.datastorage;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.SortedMap;
 import java.util.UUID;
 
 import lombok.Getter;
 
-import de.paulomart.gpex.GPex;
-import de.paulomart.gpex.datastorage.JsonConverter.SortResult;
-import de.paulomart.gpex.permissions.GPexPermissionData;
 import de.paulomart.gpex.utils.mysql.MysqlDatabaseChild;
 import de.paulomart.gpex.utils.mysql.MysqlDatabaseConnector;
 
@@ -22,12 +17,10 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 	private PreparedStatement createTableStmt;
 	private PreparedStatement selectPlayerDataStmt;
 	private PreparedStatement updatePlayerDataStmt;
-	private GPex gpex;
 	
 	public GPexMysqlDataStorage(MysqlDatabaseConnector connector, String mysqlTable) {
 		super(connector);
 		this.mysqlTable = mysqlTable;
-		gpex = GPex.getInstance();
 		
 		try {
 			preparePrepardStatemantes();
@@ -79,55 +72,5 @@ public class GPexMysqlDataStorage extends MysqlDatabaseChild implements GPexData
 			e.printStackTrace();
 		}
 		return ret;
-	}
-				
-	public boolean addToPermissionData(UUID uuid, Date date, GPexPermissionData newPermissionData, boolean merge){
-		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(uuid), false);
-		SortedMap<Long, GPexPermissionData> permissionData = result.getSortedPermissionData();
-		if (!permissionData.containsKey(date.getTime())){
-			permissionData.put(date.getTime(), newPermissionData);
-		}else{
-			if (merge){
-				GPexPermissionData orginal = permissionData.get(date.getTime());
-				permissionData.put(date.getTime(), gpex.getJsonConverter().mergeNotNull(orginal, newPermissionData));
-			}else{
-				permissionData.put(date.getTime(), newPermissionData);
-			}			
-		}
-		return setJSONData(uuid, gpex.getJsonConverter().constructJson(permissionData, result.getBasePlayerPermissions()));
-	}
-	
-	public boolean setBasePermissionData(UUID uuid, GPexPermissionData newPermissionData, boolean merge){
-		SortResult result = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(uuid), false);
-		GPexPermissionData basePermissionData;
-		if (merge){
-			basePermissionData = result.getBasePlayerPermissions();
-			
-			if (basePermissionData == null){
-				basePermissionData = new GPexPermissionData();
-			}
-			basePermissionData = gpex.getJsonConverter().mergeNotNull(basePermissionData, newPermissionData);
-		}else{
-			basePermissionData = newPermissionData;
-		}
-		return setJSONData(uuid, gpex.getJsonConverter().constructJson(result.getSortedPermissionData(), basePermissionData));
-	}
-
-	public GPexPermissionData getPermissionData(UUID uuid) {
-		SortResult sortResult = gpex.getJsonConverter().getSortedActivePermissions(getJSONData(uuid), true);
-		SortedMap<Long, GPexPermissionData> sortedPermissionData = sortResult.getSortedPermissionData();
-		GPexPermissionData playerPermissions = sortResult.getBasePlayerPermissions();
-		
-		if (playerPermissions == null){
-			playerPermissions = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
-		}
-		
-		//Overrides new 
-		for (Long time : sortedPermissionData.keySet()){
-			GPexPermissionData value = sortedPermissionData.get(time);
-			gpex.getJsonConverter().mergeNotNull(playerPermissions, value);
-		}		
-			
-		return playerPermissions;
 	}
 }

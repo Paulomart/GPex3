@@ -14,9 +14,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.paulomart.gpex.commands.GPexCommand;
 import de.paulomart.gpex.conf.GPexConfig;
 import de.paulomart.gpex.conf.GPexGroupConfig;
-import de.paulomart.gpex.datastorage.GPexDataStorage;
 import de.paulomart.gpex.datastorage.GPexMysqlDataStorage;
-import de.paulomart.gpex.datastorage.JsonConverter;
+import de.paulomart.gpex.datastorage.PlayerDataHandler;
 import de.paulomart.gpex.listeners.PlayerListener;
 import de.paulomart.gpex.permissible.PermissibleInjectManager;
 import de.paulomart.gpex.tag.GPexNameTagManager;
@@ -38,12 +37,10 @@ public class GPex extends JavaPlugin{
 	@Getter
 	private GPexGroupConfig groupConfig;
 	@Getter
-	private GPexDataStorage gpexDataStorage;
+	private PlayerDataHandler gpexDataStorage;
 	private MysqlDatabaseConnector mysqlConnector;
 	@Getter
 	private GPexNameTagManager gpexNameTagManager;
-	@Getter
-	private JsonConverter jsonConverter;
 	@Getter
 	private PlayerListener playerListener;
 	
@@ -87,9 +84,6 @@ public class GPex extends JavaPlugin{
 			
 		}
 		
-		log.info("Loading JSON..");
-		jsonConverter = new JsonConverter();
-		
 		log.info("Starting Mysql Connection..");
 		mysqlConnector = new MysqlDatabaseConnector(this, gpexConfig.getMysqlHost(), gpexConfig.getMysqlPort(), gpexConfig.getMysqlUser(), gpexConfig.getMysqlPassword(), gpexConfig.getMysqlDatabase());
 		
@@ -100,7 +94,7 @@ public class GPex extends JavaPlugin{
 			return;
 		}
 		
-		gpexDataStorage = new GPexMysqlDataStorage(mysqlConnector, gpexConfig.getMysqlTable());
+		gpexDataStorage = new PlayerDataHandler(new GPexMysqlDataStorage(mysqlConnector, gpexConfig.getMysqlTable()));
 		
 		getCommand("gpex").setExecutor(new GPexCommand());
 		

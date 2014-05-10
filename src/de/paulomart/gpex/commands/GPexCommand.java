@@ -10,7 +10,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import de.paulomart.gpex.GPex;
 import de.paulomart.gpex.datastorage.JsonConverter.SortResult;
@@ -29,6 +28,20 @@ public class GPexCommand implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		//TODO: Should make all the commands threads.		
 		if (cmd.getName().equalsIgnoreCase("gpex")){
+			if (args.length == 1 && args[0].equalsIgnoreCase("reload")){
+				if (!sender.hasPermission("gpex.reload")){
+					sender.sendMessage("§cYou don't have permissions for this command");
+					return true;
+				}
+				
+				sender.sendMessage("§6GPex is reloading..");
+				gpex.onDisable();
+				sender.sendMessage("§eGPex is now disabled..");
+				gpex.onEnable();
+				sender.sendMessage("§aGPex is reloaded!");
+				return true;				
+			}
+			
 			if (args.length >= 3 && args[0].equalsIgnoreCase("set")){				
 				if (!sender.hasPermission("gpex.set")){
 					sender.sendMessage("§cYou don't have permissions for this command");
@@ -62,8 +75,8 @@ public class GPexCommand implements CommandExecutor{
 				try {
 					JSONParser parser = new JSONParser();				
 					@SuppressWarnings("unchecked")
-					Map<String, Object> json = (Map<String, Object>) parser.parse(parseJson, gpex.getJsonConverter().getContainerFactory());
-					GPexPermissionData permissionData =	gpex.getJsonConverter().constructPermissionData(json, false);
+					Map<String, Object> json = (Map<String, Object>) parser.parse(parseJson, gpex.getGpexDataStorage().getJsonConverter().getContainerFactory());
+					GPexPermissionData permissionData =	gpex.getGpexDataStorage().getJsonConverter().constructPermissionData(json, false);
 					if (parseDate != null){
 						//timelimit
 						String[] parse = parseDate.split(" ");
@@ -97,7 +110,7 @@ public class GPexCommand implements CommandExecutor{
 					
 					sender.sendMessage("§aData updated for "+playerTarget.getName());
 					return true;
-				} catch (ParseException e) {
+				} catch (Exception e) {
 					sender.sendMessage(e.toString());
 					sender.sendMessage("§cCan't prase json: \""+parseJson+"\"");
 					return true;
@@ -117,7 +130,7 @@ public class GPexCommand implements CommandExecutor{
 				}
 				
 				UUID uuid = playerTarget.getUniqueId();
-				SortResult sortResult = gpex.getJsonConverter().getSortedActivePermissions(gpex.getGpexDataStorage().getJSONData(uuid), false);
+				SortResult sortResult = gpex.getGpexDataStorage().getJsonConverter().getSortedActivePermissions(gpex.getGpexDataStorage().getStorage().getJSONData(uuid), false);
 				
 				if (args.length == 5){
 					//timelimit
@@ -133,7 +146,7 @@ public class GPexCommand implements CommandExecutor{
 						return false;
 					}
 					
-					permissionData = gpex.getJsonConverter().resetData(permissionData, args[2].split(","));
+					permissionData = gpex.getGpexDataStorage().getJsonConverter().resetData(permissionData, args[2].split(","));
 					gpex.getGpexDataStorage().addToPermissionData(uuid, date, permissionData, false);
 				}else{
 					//edit base
@@ -144,7 +157,7 @@ public class GPexCommand implements CommandExecutor{
 						return false;
 					}
 					
-					permissionData = gpex.getJsonConverter().resetData(permissionData, args[2].split(","));
+					permissionData = gpex.getGpexDataStorage().getJsonConverter().resetData(permissionData, args[2].split(","));
 					gpex.getGpexDataStorage().setBasePermissionData(uuid, permissionData, false);
 				}	
 				
@@ -162,12 +175,14 @@ public class GPexCommand implements CommandExecutor{
 				}
 				
 				if (args[1].equalsIgnoreCase("commands")){
+					sender.sendMessage("§b§lGPex §acommands:");
+					sender.sendMessage("§b/gpex reload §c(not recommended)");
 					sender.sendMessage("§b/gpex set §a<player> <data> §2[timelimit]");
 					sender.sendMessage("§b/gpex reset §a<player> <dataType> §2[timelimit]");
 					sender.sendMessage("§3If there is not timelimit, it will set/reset the base data.");
-					
 					return true;
 				}else if (args[1].equalsIgnoreCase("parameters")){
+					sender.sendMessage("§b§lGPex §aparameters:");
 					sender.sendMessage("§aData: §ba JSON string witch can contain this keys:");
 					sender.sendMessage("§3Of type string: group, tabprefix, tabsuffix, chatprefix, chatsuffix");
 					sender.sendMessage("§3Of type array: permissions");
@@ -176,7 +191,6 @@ public class GPexCommand implements CommandExecutor{
 					sender.sendMessage("§aDataType: §ba typename of the dataparameter, like group");
 					sender.sendMessage("§3Can be a list with , between typenames");
 					sender.sendMessage("§cDataType does not accept spaces!");
-					
 					return true;
 				}
 			}
