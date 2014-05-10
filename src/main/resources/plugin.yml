@@ -1,5 +1,5 @@
 name: GPex
-version: 3.0.4-Alpha
+version: ${project.version}
 main: de.paulomart.gpex.GPex
 Authors: [Paulomart]
 softdepend: [NametagEdit, ServerCore]

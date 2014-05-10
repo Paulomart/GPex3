@@ -4,8 +4,36 @@
 	<groupId>de.paulomart</groupId>
 	<artifactId>GPex3</artifactId>
 	<version>3.0.4-Alpha</version>
-	<name>GPex 3.0</name>
+	<name>GPex3</name>
 	<description>GPex 3.0</description>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>2.3</version><!--$NO-MVN-MAN-VER$ -->
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			    <filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
 	<repositories>
 		<!-- Bukkit can be found at the following repository -->
 		<repository>
@@ -19,17 +47,32 @@
 			<artifactId>bukkit</artifactId>
 			<!-- Bukkit API Version, change if necessary -->
 			<version>1.7.8-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.12.6</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+            <groupId>ca.wacos</groupId>
+            <artifactId>NametagEdit</artifactId>
+            <scope>system</scope>
+            <systemPath>${basedir}\libs\NametagEdit.jar</systemPath>
+            <version>2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.paulomart</groupId>
 			<artifactId>ServerCore</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 			<optional>true</optional>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mongodb</groupId>
+			<artifactId>mongo-java-driver</artifactId>
+			<version>2.9.3</version>
 		</dependency>
 	</dependencies>
 </project>
