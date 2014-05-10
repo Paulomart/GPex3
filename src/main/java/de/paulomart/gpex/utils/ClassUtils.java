@@ -35,6 +35,16 @@ public class ClassUtils {
 		return toString;
 	}
 	
+	public static boolean isClassLoaded(String clazz){
+		try {
+			if (Class.forName(clazz) != null){
+				return true;
+			}
+		} catch (Exception e) {
+		}
+		return false;
+	}
+	
 	public static boolean isInteger(String s) {
 	    try { 
 	        Integer.parseInt(s); 

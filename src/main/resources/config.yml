@@ -1,3 +1,11 @@
+useMysql: true
+mongo:
+  database: gpex
+  host: localhost
+  password: geheim123
+  port: 27017
+  user: user
+  collection: gpex3
 mysql:
   database: gpex
   host: localhost

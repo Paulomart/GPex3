@@ -14,6 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.paulomart.gpex.commands.GPexCommand;
 import de.paulomart.gpex.conf.GPexConfig;
 import de.paulomart.gpex.conf.GPexGroupConfig;
+import de.paulomart.gpex.datastorage.GPexMongoDataSorage;
 import de.paulomart.gpex.datastorage.GPexMysqlDataStorage;
 import de.paulomart.gpex.datastorage.PlayerDataHandler;
 import de.paulomart.gpex.listeners.PlayerListener;
@@ -23,6 +24,7 @@ import de.paulomart.gpex.tag.NameTagEditPluginImplemention;
 import de.paulomart.gpex.tag.NoNameTagChangeImplemention;
 import de.paulomart.gpex.tag.ServerCoreImplemention;
 import de.paulomart.gpex.utils.ClassUtils;
+import de.paulomart.gpex.utils.mongo.MongoDatabaseConnector;
 import de.paulomart.gpex.utils.mysql.MysqlDatabaseConnector;
 
 public class GPex extends JavaPlugin{
@@ -38,6 +40,7 @@ public class GPex extends JavaPlugin{
 	private GPexGroupConfig groupConfig;
 	@Getter
 	private PlayerDataHandler gpexDataStorage;
+	private MongoDatabaseConnector mongoConnector;
 	private MysqlDatabaseConnector mysqlConnector;
 	@Getter
 	private GPexNameTagManager gpexNameTagManager;
@@ -84,17 +87,36 @@ public class GPex extends JavaPlugin{
 			
 		}
 		
-		log.info("Starting Mysql Connection..");
-		mysqlConnector = new MysqlDatabaseConnector(this, gpexConfig.getMysqlHost(), gpexConfig.getMysqlPort(), gpexConfig.getMysqlUser(), gpexConfig.getMysqlPassword(), gpexConfig.getMysqlDatabase());
-		
-		if (mysqlConnector.connect()){
-			log.info("Connected to mysql.");
+		if (!gpexConfig.isUseMysql()){
+			if (!ClassUtils.isClassLoaded("com.mongodb.Mongo")){
+				stop(new ClassNotFoundException("I should use MongoDB, but the class is not loaded. Maybe you are using a custom build?"));
+				return;
+			}
+			
+			log.info("Starting mongo connection..");
+			mongoConnector = new MongoDatabaseConnector(gpexConfig.getMongoHost(), gpexConfig.getMongoPort(), gpexConfig.getMongoUser(), gpexConfig.getMongoPassword(), gpexConfig.getMongoDatabase());
+			
+			if (mongoConnector.connect()){
+				log.info("Connected to mongo.");
+			}else{
+				stop(new ConnectException("Could not connect to mongo"));
+				return;
+			}
+			
+			gpexDataStorage = new PlayerDataHandler(new GPexMongoDataSorage(mongoConnector, gpexConfig.getMongoCollection()));
 		}else{
-			stop(new ConnectException("Could not connect to mysql"));
-			return;
+			log.info("Starting mysql connection..");
+			mysqlConnector = new MysqlDatabaseConnector(this, gpexConfig.getMysqlHost(), gpexConfig.getMysqlPort(), gpexConfig.getMysqlUser(), gpexConfig.getMysqlPassword(), gpexConfig.getMysqlDatabase());
+			
+			if (mysqlConnector.connect()){
+				log.info("Connected to mysql.");
+			}else{
+				stop(new ConnectException("Could not connect to mysql"));
+				return;
+			}
+			
+			gpexDataStorage = new PlayerDataHandler(new GPexMysqlDataStorage(mysqlConnector, gpexConfig.getMysqlTable()));	
 		}
-		
-		gpexDataStorage = new PlayerDataHandler(new GPexMysqlDataStorage(mysqlConnector, gpexConfig.getMysqlTable()));
 		
 		getCommand("gpex").setExecutor(new GPexCommand());
 		
@@ -114,7 +136,12 @@ public class GPex extends JavaPlugin{
 	public void onDisable(){
 		try{
 			permissionManager.onDisable();
-			mysqlConnector.dissconnect();
+			if (mysqlConnector != null){
+				mysqlConnector.dissconnect();
+			}
+			if (mongoConnector != null){
+				mongoConnector.dissconnect();
+			}
 			gpexConfig.save();
 		} catch (Exception exception){
 			if (!crashed){
@@ -146,7 +173,7 @@ public class GPex extends JavaPlugin{
 			fileWriter.write("\n\n# Exception\n\n");
 			fileWriter.write(exception.toString());
 			fileWriter.write("\n\n# GPex-State\n\n");
-			fileWriter.write(toString().replaceFirst(gpexConfig.getMysqlPassword(), "--PASSWORD-REMOVED--"));
+			fileWriter.write(toString().replaceFirst(gpexConfig.getMysqlPassword(), "--PASSWORD-REMOVED--").replaceFirst(gpexConfig.getMongoPassword(), "--PASSWORD-REMOVED--"));
 			fileWriter.write("\n# You won one free hug! Reedem at @Paulomart");
 			fileWriter.flush();
 			fileWriter.close();
