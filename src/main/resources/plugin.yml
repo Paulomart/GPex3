@@ -9,11 +9,14 @@ commands:
 permissions:
    gpex.help:
       description: /gpex help
-      default: OP
+      default: FALSE
    gpex.set:
       description: /gpex set
-      default: OP
+      default: FALSE
    gpex.reset:
       description: /gpex reset
-      default: OP
+      default: FALSE
+   gpex.reload:
+      description: /gpex reload
+      default: FALSE
    

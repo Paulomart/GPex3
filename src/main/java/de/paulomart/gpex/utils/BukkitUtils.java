@@ -15,8 +15,8 @@ public class BukkitUtils {
 	}
 	
 	public static String shortStr(String str, int wantLength){
-		if (str.length() > wantLength-1){
-			str = str.substring(0, wantLength-1);
+		if (str.length() > wantLength){
+			str = str.substring(0, wantLength);
 		}
 		return str;
 	}
