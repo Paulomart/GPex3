@@ -9,7 +9,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import lombok.Getter;
-
 import de.paulomart.gpex.GPex;
 import de.paulomart.gpex.permissions.GPexGroup;
 import de.paulomart.gpex.permissions.GPexPermission;
@@ -34,7 +33,12 @@ public class GPexGroupConfig{
 
 	public void load(){
 		if (gpex.getGpexConfig().isWebLoaded()){
-			config = YamlConfiguration.loadConfiguration(HttpUtils.requestHttp(gpex.getGpexConfig().getWebURL()));
+			config = new YamlConfiguration();
+			try {
+				config.loadFromString(HttpUtils.requestHttp(gpex.getGpexConfig().getWebURL()));
+			} catch (Exception e) {
+				gpex.stop(e);
+			}
 		}else{
 			configFile = new File(gpex.getGpexConfig().getLocalPath());
 			config = YamlConfiguration.loadConfiguration(configFile);

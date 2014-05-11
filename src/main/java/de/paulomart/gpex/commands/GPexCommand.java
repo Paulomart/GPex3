@@ -179,7 +179,7 @@ public class GPexCommand implements CommandExecutor{
 					sender.sendMessage("§b/gpex reload §c(not recommended)");
 					sender.sendMessage("§b/gpex set §a<player> <data> §2[timelimit]");
 					sender.sendMessage("§b/gpex reset §a<player> <dataType> §2[timelimit]");
-					sender.sendMessage("§3If there is not timelimit, it will set/reset the base data.");
+					sender.sendMessage("§3If there is no timelimit, it will set/reset the base data.");
 					return true;
 				}else if (args[1].equalsIgnoreCase("parameters")){
 					sender.sendMessage("§b§lGPex §aparameters:");
