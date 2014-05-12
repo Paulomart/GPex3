@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.paulomart.gpex.commands.GPexCommand;
 import de.paulomart.gpex.conf.GPexConfig;
 import de.paulomart.gpex.conf.GPexGroupConfig;
-import de.paulomart.gpex.datastorage.GPexMongoDataSorage;
+import de.paulomart.gpex.datastorage.GPexMongoDataStorage;
 import de.paulomart.gpex.datastorage.GPexMysqlDataStorage;
 import de.paulomart.gpex.datastorage.PlayerDataHandler;
 import de.paulomart.gpex.listeners.PlayerListener;
@@ -103,7 +103,7 @@ public class GPex extends JavaPlugin{
 				return;
 			}
 			
-			gpexDataStorage = new PlayerDataHandler(new GPexMongoDataSorage(mongoConnector, gpexConfig.getMongoCollection()));
+			gpexDataStorage = new PlayerDataHandler(new GPexMongoDataStorage(mongoConnector, gpexConfig.getMongoCollection()));
 		}else{
 			log.info("Starting mysql connection..");
 			mysqlConnector = new MysqlDatabaseConnector(this, gpexConfig.getMysqlHost(), gpexConfig.getMysqlPort(), gpexConfig.getMysqlUser(), gpexConfig.getMysqlPassword(), gpexConfig.getMysqlDatabase());
