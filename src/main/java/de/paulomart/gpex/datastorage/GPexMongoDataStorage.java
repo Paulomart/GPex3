@@ -8,11 +8,11 @@ import com.mongodb.DBCollection;
 import de.paulomart.gpex.utils.mongo.MongoDatabaseChild;
 import de.paulomart.gpex.utils.mongo.MongoDatabaseConnector;
 
-public class GPexMongoDataSorage extends MongoDatabaseChild implements GPexDataStorage{
+public class GPexMongoDataStorage extends MongoDatabaseChild implements GPexDataStorage{
 
 	private DBCollection collection;
 	
-	public GPexMongoDataSorage(MongoDatabaseConnector connector, String collectionName) {
+	public GPexMongoDataStorage(MongoDatabaseConnector connector, String collectionName) {
 		super(connector);
 		collection = getDatabase().getCollection(collectionName);
 	}
