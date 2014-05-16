@@ -26,7 +26,8 @@ public class GPexMongoDataStorage extends MongoDatabaseChild implements GPexData
 	}
 
 	public boolean setJSONData(UUID uuid, String jsonData) {
-		collection.update(new BasicDBObject("uuid", uuid.toString()), new BasicDBObject("uuid", uuid.toString()).append("gpexdata", jsonData), true, false);
+		BasicDBObject data = new BasicDBObject("$set", new BasicDBObject("uuid", uuid.toString()).append("gpexdata", jsonData));
+		collection.update(new BasicDBObject("uuid", uuid.toString()), data, true, false);
 		return true;
 	}
 

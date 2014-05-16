@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.json.simple.parser.JSONParser;
 
@@ -26,10 +27,10 @@ public class GPexCommand implements CommandExecutor{
 	}
 	
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		//TODO: Should make all the commands threads.		
+		//TODO: Should make all the commands threads.				
 		if (cmd.getName().equalsIgnoreCase("gpex")){
 			if (args.length == 1 && args[0].equalsIgnoreCase("reload")){
-				if (!sender.hasPermission("gpex.reload")){
+				if (!hasPermission(sender, "gpex.reload")){
 					sender.sendMessage("§cYou don't have permissions for this command");
 					return true;
 				}
@@ -42,8 +43,41 @@ public class GPexCommand implements CommandExecutor{
 				return true;				
 			}
 			
+			if (args.length == 2 && args[0].equalsIgnoreCase("list")){
+				if (!hasPermission(sender, "gpex.list")){
+					sender.sendMessage("§cYou don't have permissions for this command");
+					return true;
+				}
+				
+				Player playerTarget = BukkitUtils.getPlayer(args[1]);
+				if (playerTarget == null){
+					sender.sendMessage("§cCant find player");
+					return true;
+				}
+				
+				UUID uuid = playerTarget.getUniqueId();
+				SortResult result = gpex.getGpexDataStorage().getJsonConverter().getSortedActivePermissions(gpex.getGpexDataStorage().getStorage().getJSONData(uuid), false);
+				
+				if (result.getBasePlayerPermissions() != null){
+					sender.sendMessage("§b§lData §afor "+playerTarget.getName());
+					sender.sendMessage("§6Base data:");
+					sender.sendMessage(result.getBasePlayerPermissions().formatForOutput());
+				}
+						
+				if (!result.getSortedPermissionData().isEmpty()){
+					sender.sendMessage("§6Timelimit data:");
+					for (long time : result.getSortedPermissionData().keySet()){
+						Date date = new Date();
+						date.setTime(time);
+						sender.sendMessage("§e"+DateUtils.stringFromDate(date));
+						sender.sendMessage(result.getSortedPermissionData().get(time).formatForOutput());
+					}
+				}
+				return true;
+			}
+				
 			if (args.length >= 3 && args[0].equalsIgnoreCase("set")){				
-				if (!sender.hasPermission("gpex.set")){
+				if (!hasPermission(sender, "gpex.set")){
 					sender.sendMessage("§cYou don't have permissions for this command");
 					return true;
 				}
@@ -118,7 +152,7 @@ public class GPexCommand implements CommandExecutor{
 			}
 			
 			if (((args.length == 5 || args.length == 3) && args[0].equalsIgnoreCase("reset"))){
-				if (!sender.hasPermission("gpex.reset")){
+				if (!hasPermission(sender, "gpex.reset")){
 					sender.sendMessage("§cYou don't have permissions for this command");
 					return true;
 				}
@@ -169,7 +203,7 @@ public class GPexCommand implements CommandExecutor{
 			}
 			
 			if (args.length == 2 && args[0].equalsIgnoreCase("help")){
-				if (!sender.hasPermission("gpex.help")){
+				if (!hasPermission(sender, "gpex.help")){
 					sender.sendMessage("§cYou don't have permissions for this command");
 					return true;
 				}
@@ -177,6 +211,7 @@ public class GPexCommand implements CommandExecutor{
 				if (args[1].equalsIgnoreCase("commands")){
 					sender.sendMessage("§b§lGPex §acommands:");
 					sender.sendMessage("§b/gpex reload §c(not recommended)");
+					sender.sendMessage("§b/gpex list §a<player>");
 					sender.sendMessage("§b/gpex set §a<player> <data> §2[timelimit]");
 					sender.sendMessage("§b/gpex reset §a<player> <dataType> §2[timelimit]");
 					sender.sendMessage("§3If there is no timelimit, it will set/reset the base data.");
@@ -206,6 +241,13 @@ public class GPexCommand implements CommandExecutor{
 			return true;
 		}
 		return false;
+	}
+	
+	private boolean hasPermission(CommandSender sender, String perm){
+		if (sender instanceof ConsoleCommandSender){
+			return true;
+		}
+		return sender.hasPermission(perm);
 	}
 	
 	private Date afterDays(int days){

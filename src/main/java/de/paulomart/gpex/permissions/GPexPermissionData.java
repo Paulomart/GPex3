@@ -34,4 +34,37 @@ public class GPexPermissionData {
 		permissions.addAll(extraPermissions);
 		return permissions;
 	}
+	
+	public String[] formatForOutput(){
+		List<String> str = new ArrayList<String>();
+		if (group != null){
+			str.add("§bGroup: §r"+group.getName());
+		}
+		if (!extraPermissions.isEmpty()){
+			str.add("§bExtra permissions: ");
+			for (GPexPermission permission : extraPermissions){
+				str.add("§2"+permission.toString());
+			}
+		}
+		if (chatPrefix !=null){
+			str.add("§bChatPrefix: §r"+chatPrefix);
+		}
+		if (chatSuffix != null){
+			str.add("§bChatSuffix: §r"+chatSuffix);
+		}
+		if (tabPrefix != null){
+			str.add("§bTabPrefix: §r"+tabPrefix);
+		}
+		if (tabSuffix != null){
+			str.add("§bTabSuffix: §r"+tabSuffix);
+		}
+		if (str.isEmpty()){
+			str.add("§6No data");
+		}
+	
+		String[] arr = new String[str.size()];
+		arr = str.toArray(arr);
+	
+		return arr;
+	}
 }
