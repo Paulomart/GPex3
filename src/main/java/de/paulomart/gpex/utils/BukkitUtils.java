@@ -2,7 +2,7 @@ package de.paulomart.gpex.utils;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 
 public class BukkitUtils {
 
@@ -21,12 +21,7 @@ public class BukkitUtils {
 		return str;
 	}
 	
-	public static Player getPlayer(String name){
-		for (Player onlinePlayer : Bukkit.getServer().getOnlinePlayers()){
-			if (onlinePlayer.getName().equalsIgnoreCase(name)){
-				return onlinePlayer;
-			}
-		}
-		return null;
+	public static OfflinePlayer getPlayer(String name){
+		return Bukkit.getOfflinePlayer(name);
 	}
 }

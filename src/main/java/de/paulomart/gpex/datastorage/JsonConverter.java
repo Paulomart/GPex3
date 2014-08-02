@@ -41,6 +41,12 @@ public class JsonConverter {
 		};
 	}
 		
+	/**
+	 * 
+	 * @param json
+	 * @param exactCopy of default group
+	 * @return
+	 */
 	public GPexPermissionData constructPermissionData(Map<String, Object> json, boolean exactCopy){
 		GPexPermissionData playerPermissions = new GPexPermissionData();
 				
@@ -71,8 +77,9 @@ public class JsonConverter {
 		List<String> permissions = (List<String>) json.get("permissions");
 		if (permissions != null){
 			for (String permission : permissions){
-				if (permission != null && !permission.equalsIgnoreCase(""))
+				if (permission != null && !permission.equalsIgnoreCase("")){
 					playerPermissions.getExtraPermissions().add(new GPexPermission(permission));
+				}
 			}
 		}
 		return playerPermissions;

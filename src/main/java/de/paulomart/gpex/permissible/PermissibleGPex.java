@@ -43,7 +43,8 @@ public class PermissibleGPex extends PermissibleBase {
 
 		permissionData = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
 		for (GPexPermission gpexPermission : permissionData.getPermissions()){
-			calculateChilds(gpexPermission.getPermissionNode().toLowerCase(), permissionRoot, gpexPermission.isPositive());
+			if (gpexPermission.isVaildOnServer())
+				calculateChilds(gpexPermission.getPermissionNode().toLowerCase(), permissionRoot, gpexPermission.isPositive());
 		}
 	}	
 				
@@ -78,7 +79,8 @@ public class PermissibleGPex extends PermissibleBase {
 				public void run() {
 					permissionData = gpex.getGpexDataStorage().getPermissionData(player.getUniqueId());
 					for (GPexPermission gpexPermission : permissionData.getPermissions()){
-						calculateChilds(gpexPermission.getPermissionNode(), permissionRoot, gpexPermission.isPositive());
+						if (gpexPermission.isVaildOnServer())
+							calculateChilds(gpexPermission.getPermissionNode(), permissionRoot, gpexPermission.isPositive());
 					}
 					player.setDisplayName(BukkitUtils.color(permissionData.getChatPrefix())+player.getName()+BukkitUtils.color(permissionData.getChatSuffix()));
 					gpex.getGpexNameTagManager().setNameTag(player, BukkitUtils.short16(permissionData.getTabPrefix()), BukkitUtils.short16(permissionData.getTabSuffix()));

@@ -3,9 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.paulomart</groupId>
 	<artifactId>GPex3</artifactId>
-	<version>3.0.5-Alpha</version>
+	<version>3.0.8-Alpha</version>
 	<name>GPex3</name>
 	<description>GPex 3.0</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
 		<plugins>
 			<plugin>
@@ -30,7 +33,7 @@
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
-			    <filtering>true</filtering>
+				<filtering>true</filtering>
 			</resource>
 		</resources>
 	</build>
@@ -46,7 +49,7 @@
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
 			<!-- Bukkit API Version, change if necessary -->
-			<version>1.7.8-R0.1-SNAPSHOT</version>
+			<version>1.7.9-R0.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -56,11 +59,11 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-            <groupId>ca.wacos</groupId>
-            <artifactId>NametagEdit</artifactId>
-            <scope>system</scope>
-            <systemPath>${basedir}\libs\NametagEdit.jar</systemPath>
-            <version>2.1</version>
+			<groupId>ca.wacos</groupId>
+			<artifactId>NametagEdit</artifactId>
+			<scope>system</scope>
+			<systemPath>${basedir}\libs\NametagEdit.jar</systemPath>
+			<version>2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>de.paulomart</groupId>
