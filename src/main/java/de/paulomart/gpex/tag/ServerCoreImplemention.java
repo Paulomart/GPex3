@@ -16,11 +16,13 @@ public class ServerCoreImplemention implements GPexNameTagManager {
 	public void setNameTag(Player player, String tabPrefix, String tabSuffix, String chatPrefix, String chatSuffix) {
 		coreApi.getNametagAPI().setNametag(player.getName(), BukkitUtils.short16(chatPrefix), BukkitUtils.short16(chatSuffix));
 		player.setDisplayName(chatPrefix + player.getDisplayName() + chatSuffix);
+		player.setPlayerListName(BukkitUtils.short16(tabPrefix + player.getName()));
 	}
 
 	public void removeNameTag(Player player) {
 		coreApi.getNametagAPI().resetNametag(player.getName());
 		player.setDisplayName(player.getName());
+		player.setPlayerListName(player.getName());
 	}
 
 }
