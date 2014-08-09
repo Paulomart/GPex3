@@ -9,7 +9,7 @@ public class NameTagEditPluginImplemention implements GPexNameTagManager{
 	
 	public void setNameTag(Player player, String tabPrefix, String tabSuffix, String chatPrefix, String chatSuffix) {
 		NametagAPI.setNametagSoft(player.getName(), BukkitUtils.short16(tabPrefix), BukkitUtils.short16(tabSuffix));
-		player.setDisplayName(chatPrefix + player.getDisplayName() + chatSuffix);
+		player.setDisplayName(chatPrefix + player.getName() + chatSuffix);
 	}
 
 	public void removeNameTag(Player player) {

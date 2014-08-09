@@ -10,7 +10,7 @@ import org.bukkit.entity.Player;
 public class NoNameTagChangeImplemention implements GPexNameTagManager{
 
 	public void setNameTag(Player player, String tabPrefix, String tabSuffix, String chatPrefix, String chatSuffix) {
-		player.setDisplayName(chatPrefix + player.getDisplayName() + chatSuffix);
+		player.setDisplayName(chatPrefix + player.getName() + chatSuffix);
 	}
 
 	public void removeNameTag(Player player) {
