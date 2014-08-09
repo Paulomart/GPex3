@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 public interface GPexNameTagManager {
 
-	public void setNameTag(Player player, String prefix, String suffix);
+	public void setNameTag(Player player, String tabPrefix, String tabSuffix, String chatPrefix, String chatSuffix);
 	
 	public void removeNameTag(Player player);
 	
