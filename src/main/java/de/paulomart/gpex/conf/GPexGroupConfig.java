@@ -65,6 +65,8 @@ public class GPexGroupConfig{
 			String inherited = config.getString(path+".inherited");
 			String tabprefix = config.getString(path+".tabprefix");
 			String tabsuffix = config.getString(path+".tabsuffix");
+			String tagprefix = config.getString(path+".tagprefix");
+			String tagsuffix = config.getString(path+".tagsuffix");
 			String chatprefix = config.getString(path+".chatprefix");
 			String chatsuffix = config.getString(path+".chatsuffix");
 
@@ -80,6 +82,14 @@ public class GPexGroupConfig{
 				tabsuffix = "";
 			}
 			
+			if (tagprefix == null){
+				tagprefix = "";
+			}
+			
+			if (tagsuffix == null){
+				tagsuffix = "";
+			}
+			
 			if (chatprefix == null){
 				chatprefix = "";
 			}
@@ -88,7 +98,7 @@ public class GPexGroupConfig{
 				chatsuffix = "";
 			}
 			
-			GPexGroup group = new GPexGroup(groupName, permissions, inherited, chatprefix, chatsuffix, tabprefix, tabsuffix);
+			GPexGroup group = new GPexGroup(groupName, permissions, inherited, chatprefix, chatsuffix, tabprefix, tabsuffix, tagprefix, tagsuffix);
 			groups.put(groupName, group);
 		}
 			

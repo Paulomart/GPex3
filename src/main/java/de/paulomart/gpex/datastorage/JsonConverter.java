@@ -66,6 +66,14 @@ public class JsonConverter {
 			playerPermissions.setTabSuffix((String) json.get("tabsuffix"));
 		}
 		
+		if (json.get("tagprefix") != null){
+			playerPermissions.setTagPrefix((String) json.get("tagprefix"));
+		}
+
+		if (json.get("tagsuffix") != null){
+			playerPermissions.setTagSuffix((String) json.get("tagsuffix"));
+		}
+		
 		if (json.get("chatprefix") != null){
 			playerPermissions.setChatPrefix((String) json.get("chatprefix"));
 		}
@@ -122,6 +130,14 @@ public class JsonConverter {
 				permissionData.setTabSuffix(null);
 			}
 			
+			if (reset.equalsIgnoreCase("tagprefix")){
+				permissionData.setTagPrefix(null);
+			}
+			
+			if (reset.equalsIgnoreCase("tagsuffix")){
+				permissionData.setTagSuffix(null);
+			}
+			
 			if (reset.equalsIgnoreCase("permissions")){
 				permissionData.getExtraPermissions().clear();
 			}
@@ -155,6 +171,14 @@ public class JsonConverter {
 		
 		if  (permissionData.getTabSuffix() != null){
 			json.put("tabsuffix", permissionData.getTabSuffix());
+		}
+		
+		if  (permissionData.getTabPrefix() != null){
+			json.put("tagprefix", permissionData.getTagPrefix());
+		}
+		
+		if  (permissionData.getTabSuffix() != null){
+			json.put("tagsuffix", permissionData.getTagSuffix());
 		}
 		
 		if (permissionData.getGroup() != null){
@@ -234,6 +258,14 @@ public class JsonConverter {
 		
 		if (toBeAdded.getTabSuffix() != null){
 			orginal.setTabSuffix(toBeAdded.getTabSuffix());
+		}
+		
+		if (toBeAdded.getTagPrefix() != null){
+			orginal.setTagPrefix(toBeAdded.getTagPrefix());
+		}
+		
+		if (toBeAdded.getTagSuffix() != null){
+			orginal.setTagSuffix(toBeAdded.getTagSuffix());
 		}
 		
 		if (toBeAdded.getGroup() != null){

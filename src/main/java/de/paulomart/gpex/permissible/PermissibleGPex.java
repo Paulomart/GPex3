@@ -82,7 +82,7 @@ public class PermissibleGPex extends PermissibleBase {
 						if (gpexPermission.isVaildOnServer())
 							calculateChilds(gpexPermission.getPermissionNode(), permissionRoot, gpexPermission.isPositive());
 					}
-					gpex.getGpexNameTagManager().setNameTag(player, BukkitUtils.color(permissionData.getTabPrefix()), BukkitUtils.color(permissionData.getTabSuffix()), BukkitUtils.color(permissionData.getChatPrefix()), BukkitUtils.color(permissionData.getChatSuffix()));
+					gpex.getGpexNameTagManager().setNameTag(player, BukkitUtils.color(permissionData.getTabPrefix()), BukkitUtils.color(permissionData.getTabSuffix()), BukkitUtils.color(permissionData.getChatPrefix()), BukkitUtils.color(permissionData.getChatSuffix()), BukkitUtils.color(permissionData.getTagPrefix()), BukkitUtils.color(permissionData.getTagSuffix()));
 				}
 			}, "GPexPermissible, recalculatingPermissions for "+player.getName()
 			).start();

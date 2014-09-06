@@ -221,7 +221,7 @@ public class GPexCommand implements CommandExecutor{
 				}else if (args[1].equalsIgnoreCase("parameters")){
 					sender.sendMessage("§b§lGPex §aparameters:");
 					sender.sendMessage("§aData: §ba JSON string witch can contain this keys:");
-					sender.sendMessage("§3Of type string: group, tabprefix, tabsuffix, chatprefix, chatsuffix");
+					sender.sendMessage("§3Of type string: group, tabprefix, tabsuffix, chatprefix, chatsuffix, tagprefix, tagsuffix");
 					sender.sendMessage("§3Of type array: permissions");
 					sender.sendMessage("§aTimelimit: §ba timestamp in this format: dd-MM-yyyy HH:mm:ss");
 					sender.sendMessage("§3Can be also relative in days in this format: <days> days");

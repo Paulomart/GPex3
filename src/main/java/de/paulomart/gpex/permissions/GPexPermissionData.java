@@ -14,6 +14,8 @@ public class GPexPermissionData {
 	private String chatSuffix;
 	private String tabPrefix;
 	private String tabSuffix;
+	private String tagPrefix;
+	private String tagSuffix;
 	
 	public GPexPermissionData(){
 		
@@ -25,6 +27,8 @@ public class GPexPermissionData {
 		chatSuffix = gpexGroup.getChatSuffix();
 		tabPrefix = gpexGroup.getTabPrefix();
 		tabSuffix = gpexGroup.getTabSuffix();
+		tagPrefix = gpexGroup.getTagPrefix();
+		tagSuffix = gpexGroup.getTagSuffix();
 	}
 	
 	public List<GPexPermission> getPermissions(){
@@ -57,6 +61,12 @@ public class GPexPermissionData {
 		}
 		if (tabSuffix != null){
 			str.add("§bTabSuffix: §r"+tabSuffix);
+		}
+		if (tabPrefix != null){
+			str.add("§bTagPrefix: §r"+tagPrefix);
+		}
+		if (tabSuffix != null){
+			str.add("§bTagSuffix: §r"+tagSuffix);
 		}
 		if (str.isEmpty()){
 			str.add("§6No data");
