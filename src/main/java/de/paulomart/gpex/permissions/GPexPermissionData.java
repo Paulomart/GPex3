@@ -62,10 +62,10 @@ public class GPexPermissionData {
 		if (tabSuffix != null){
 			str.add("§bTabSuffix: §r"+tabSuffix);
 		}
-		if (tabPrefix != null){
+		if (tagPrefix != null){
 			str.add("§bTagPrefix: §r"+tagPrefix);
 		}
-		if (tabSuffix != null){
+		if (tagSuffix != null){
 			str.add("§bTagSuffix: §r"+tagSuffix);
 		}
 		if (str.isEmpty()){

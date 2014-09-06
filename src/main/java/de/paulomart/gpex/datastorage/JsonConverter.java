@@ -173,11 +173,11 @@ public class JsonConverter {
 			json.put("tabsuffix", permissionData.getTabSuffix());
 		}
 		
-		if  (permissionData.getTabPrefix() != null){
+		if  (permissionData.getTagPrefix() != null){
 			json.put("tagprefix", permissionData.getTagPrefix());
 		}
 		
-		if  (permissionData.getTabSuffix() != null){
+		if  (permissionData.getTagSuffix() != null){
 			json.put("tagsuffix", permissionData.getTagSuffix());
 		}
 		
