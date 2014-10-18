@@ -67,10 +67,9 @@
 		</dependency>
 		<dependency>
 			<groupId>de.paulomart</groupId>
-			<artifactId>ServerCore</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<artifactId>servercore-api</artifactId>
+			<version>GIT-SNAPSHOT</version>
 			<optional>true</optional>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.mongodb</groupId>
