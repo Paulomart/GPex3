@@ -40,7 +40,8 @@ public class PermissibleGPex extends PermissibleBase {
 		super(player);
 		gpex = GPex.getInstance();
 		this.player = player;
-
+		
+		super.setOp(false);
 		permissionData = new GPexPermissionData(gpex.getGroupConfig().getDefaultGroup());
 		for (GPexPermission gpexPermission : permissionData.getPermissions()){
 			if (gpexPermission.isVaildOnServer())
@@ -92,6 +93,15 @@ public class PermissibleGPex extends PermissibleBase {
 	@Override
 	public void recalculatePermissions(){
 		recalculatePermissions(false);
+	}
+	
+	@Override
+	public boolean isOp(){
+		return false;
+	}
+	
+	@Override
+	public void setOp(boolean value){
 	}
 	
 	public PermissionValue getValue(String permission){
