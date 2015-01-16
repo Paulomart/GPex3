@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.paulomart</groupId>
 	<artifactId>GPex3</artifactId>
-	<version>3.0.8-Alpha</version>
+	<version>3.0.9-Alpha</version>
 	<name>GPex3</name>
 	<description>GPex 3.0</description>
 	<properties>
