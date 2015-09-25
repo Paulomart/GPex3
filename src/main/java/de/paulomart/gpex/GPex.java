@@ -22,7 +22,6 @@ import de.paulomart.gpex.permissible.PermissibleInjectManager;
 import de.paulomart.gpex.tag.GPexNameTagManager;
 import de.paulomart.gpex.tag.NameTagEditPluginImplemention;
 import de.paulomart.gpex.tag.NoNameTagChangeImplemention;
-import de.paulomart.gpex.tag.ServerCoreImplemention;
 import de.paulomart.gpex.utils.ClassUtils;
 import de.paulomart.gpex.utils.mongo.MongoDatabaseConnector;
 import de.paulomart.gpex.utils.mysql.MysqlDatabaseConnector;
@@ -71,10 +70,6 @@ public class GPex extends JavaPlugin{
 			if (Bukkit.getServer().getPluginManager().isPluginEnabled("NametagEdit")){
 				gpexNameTagManager = new NameTagEditPluginImplemention();
 				log.info("Hooked with NametagEdit");
-				
-			}else if (Bukkit.getServer().getPluginManager().isPluginEnabled("ServerCore")){
-				gpexNameTagManager = new ServerCoreImplemention();
-				log.info("Hooked with ServerCore");
 				
 			}else{
 				gpexNameTagManager = new NoNameTagChangeImplemention();
